@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BikeX - Vásárlás</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; background: #0a0e1a; color: #f8fafc; font-family: 'Inter', sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    .nav { height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; background: #111827; border-bottom: 1px solid #1f2937; }
+    .logo { background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.4rem; font-weight: 800; }
+    .back-link { color: #94a3b8; font-size: .88rem; }
+    .back-link:hover { color: white; }
+    .page { width: min(960px, calc(100% - 2rem)); margin: 0 auto; padding: 3rem 0; }
+    .eyebrow { color: #60a5fa; font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin-top: .45rem; font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; }
+    .subtitle { margin-top: .5rem; color: #94a3b8; }
+    .layout { display: grid; grid-template-columns: 1.35fr .8fr; gap: 1.25rem; margin-top: 2rem; }
+    .panel { border: 1px solid #334155; border-radius: 1rem; background: #111827; padding: 1.35rem; }
+    .panel h2 { margin-bottom: 1rem; font-size: 1.05rem; }
+    .auth-panel { border-color: rgba(96,165,250,.35); background: linear-gradient(145deg, #17243a, #111827); }
+    .auth-panel p { color: #cbd5e1; line-height: 1.6; }
+    .btn { display: inline-block; width: 100%; margin-top: 1.2rem; border: 0; border-radius: .65rem; padding: .8rem 1rem; color: white; background: linear-gradient(135deg,#2563eb,#7c3aed); text-align: center; font-weight: 700; cursor: pointer; }
+    .checkout-form { display: grid; gap: .75rem; margin-top: 1rem; }
+    .checkout-form label { color: #94a3b8; font-size: .78rem; }
+    .checkout-form input { width: 100%; margin-top: .35rem; border: 1px solid #334155; border-radius: .5rem; padding: .65rem .7rem; background: #0f172a; color: white; outline: none; font: inherit; }
+    .checkout-form input:focus { border-color: #60a5fa; }
+    .logged-in { color: #6ee7b7; font-size: .86rem; font-weight: 700; }
+    .cart-list { display: grid; gap: .7rem; }
+    .cart-item { display: flex; align-items: center; gap: .75rem; padding-bottom: .7rem; border-bottom: 1px solid #263449; }
+    .cart-item:last-child { border-bottom: 0; padding-bottom: 0; }
+    .cart-item img { width: 58px; height: 48px; border-radius: .5rem; object-fit: cover; }
+    .cart-item strong { display: block; font-size: .85rem; }
+    .cart-item span { color: #94a3b8; font-size: .78rem; }
+    .total { display: flex; justify-content: space-between; margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid #334155; font-size: 1.05rem; font-weight: 800; }
+    .empty { color: #94a3b8; line-height: 1.6; }
+    @media (max-width: 700px) { .nav { padding: 0 1rem; } .page { padding: 2rem 0; } .layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html" class="logo">🚲 BikeX</a>
+    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <a href="index.html" class="back-link">Főoldal</a>
+      <a href="marketplace.html" class="back-link">Piactér</a>
+      <a href="analytics.html" class="back-link">Analytics</a>
+      <a href="shows.html" class="back-link">Versenyek</a>
+      <a href="parks.html" class="back-link">Parkok</a>
+      <a href="travel.html" class="back-link">Utazás</a>
+      <a href="profile.html" class="back-link">Profil</a>
+    </div>
+  </nav>
+
+  <main class="page">
+    <div class="eyebrow">BikeX piactér</div>
+    <h1>Vásárlás folytatása</h1>
+    <p class="subtitle">Ellenőrizd a kosarad, majd véglegesítsd a rendelésedet.</p>
+
+    <div class="layout">
+      <section class="panel auth-panel" id="authPanel">
+        <h2>Bejelentkezés szükséges</h2>
+        <p>A vásárlás biztonságos befejezéséhez jelentkezz be a BikeX fiókodba. Bejelentkezés után automatikusan visszatérsz erre az oldalra.</p>
+        <a class="btn" href="login.html?return=checkout.html">Bejelentkezés a vásárláshoz</a>
+      </section>
+      <section class="panel">
+        <h2>A kosarad</h2>
+        <div id="cartList" class="cart-list"></div>
+        <div id="cartTotal" class="total"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    var session = JSON.parse(localStorage.getItem('bikexSession') || 'null');
+    var cart = JSON.parse(localStorage.getItem('bikexCart') || '[]');
+    var cartList = document.getElementById('cartList');
+    var cartTotal = document.getElementById('cartTotal');
+    var authPanel = document.getElementById('authPanel');
+
+    if (session && session.email) {
+      authPanel.innerHTML = '<h2>Rendelés véglegesítése</h2>' +
+        '<div class="logged-in">✓ Bejelentkezve: ' + (session.name || session.email) + '</div>' +
+        '<form class="checkout-form" onsubmit="completePurchase(event)">' +
+        '<label>Szállítási cím<input required placeholder="Irányítószám, város, utca, házszám"></label>' +
+        '<label>Telefonszám<input required type="tel" placeholder="+36 30 123 4567"></label>' +
+        '<button class="btn" type="submit">Fizetés és rendelés leadása</button>' +
+        '</form>';
+    } else {
+      authPanel.innerHTML = '<h2>Bejelentkezés szükséges</h2>' +
+        '<p>A vásárlás biztonságos befejezéséhez jelentkezz be a BikeX fiókodba. Bejelentkezés után automatikusan visszatérsz erre az oldalra.</p>' +
+        '<a class="btn" href="login.html?return=checkout.html">Bejelentkezés a vásárláshoz</a>';
+    }
+
+    if (!cart.length) {
+      cartList.innerHTML = '<div class="empty">A kosarad üres. Válassz egy terméket a piactéren.</div>';
+      cartTotal.style.display = 'none';
+    } else {
+      cartList.innerHTML = cart.map(function(item) {
+        return '<div class="cart-item"><img src="' + item.img + '" alt="' + item.name + '"><div><strong>' + item.name + '</strong><span>' + item.price.toLocaleString('hu-HU') + ' Ft</span></div></div>';
+      }).join('');
+      var total = cart.reduce(function(sum, item) { return sum + item.price; }, 0);
+      cartTotal.innerHTML = '<span>Összesen</span><span>' + total.toLocaleString('hu-HU') + ' Ft</span>';
+    }
+
+    function completePurchase(event) {
+      event.preventDefault();
+      if (!session || !session.email || !cart.length) return;
+      alert('A rendelésedet rögzítettük! Hamarosan felvesszük veled a kapcsolatot.');
+      localStorage.removeItem('bikexCart');
+      window.location.href = 'marketplace.html';
+    }
+  </script>
+</body>
+</html>

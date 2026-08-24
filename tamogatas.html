@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BikeX - Támogatás</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; background: #0a0e1a; color: #e5e7eb; font-family: 'Inter', sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    .nav { min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0 2rem; background: #111827; border-bottom: 1px solid #1f2937; position: sticky; top: 0; z-index: 10; }
+    .logo { background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.4rem; font-weight: 800; }
+    .nav-links { display: flex; align-items: center; gap: 1.1rem; flex-wrap: wrap; }
+    .nav-link { color: #d1d5db; font-size: .85rem; }
+    .nav-link:hover { color: white; }
+    .nav-button { padding: .45rem .8rem; border: 1px solid #374151; border-radius: .5rem; color: #d1d5db; font-size: .82rem; }
+    .nav-button.primary { border: 0; background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; font-weight: 600; }
+    .page { width: min(900px, calc(100% - 2rem)); margin: 0 auto; padding: 3rem 0 5rem; }
+    .eyebrow { color: #34d399; font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: .5rem 0 .7rem; color: white; font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; }
+    .lead { color: #cbd5e1; line-height: 1.7; }
+    .layout { display: grid; grid-template-columns: 1.1fr .9fr; gap: 1rem; margin-top: 2rem; }
+    .card { padding: 1.35rem; border: 1px solid #334155; border-radius: .9rem; background: #111827; }
+    .card h2 { margin-bottom: .75rem; color: #f8fafc; font-size: 1.05rem; }
+    .card p, .card li { color: #94a3b8; font-size: .88rem; line-height: 1.7; }
+    ul { margin-left: 1.1rem; }
+    .contact { display: block; margin-top: 1rem; padding: .75rem 1rem; border-radius: .6rem; background: rgba(59,130,246,.15); color: #93c5fd; font-weight: 700; }
+    footer { border-top: 1px solid #1f2937; background: #111827; padding: 1.5rem; text-align: center; color: #6b7280; font-size: .82rem; }
+    footer a { color: #9ca3af; margin: 0 .5rem; }
+    @media (max-width: 700px) { .nav { padding: .8rem 1rem; align-items: flex-start; flex-direction: column; } .page { padding-top: 2rem; } .layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html" class="logo">🚲 BikeX</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Főoldal</a>
+      <a href="marketplace.html" class="nav-link">Piactér</a><a href="analytics.html" class="nav-link">Analytics</a><a href="shows.html" class="nav-link">Versenyek</a><a href="parks.html" class="nav-link">Parkok</a><a href="travel.html" class="nav-link">Utazás</a><a href="login.html" class="nav-button">Bejelentkezés</a><a href="register.html" class="nav-button primary">Regisztráció</a>
+    </div>
+  </nav>
+  <main class="page">
+    <div class="eyebrow">Segítünk eligazodni</div>
+    <h1>Támogatás</h1>
+    <p class="lead">Kérdésed van a fiókoddal, egy hirdetéssel vagy a vásárlással kapcsolatban? Nézd meg a gyakori témákat, vagy írj nekünk közvetlenül.</p>
+    <div class="layout">
+      <section class="card"><h2>Gyakori kérdések</h2><ul><li>Jelszó visszaállítása a bejelentkezési oldalon.</li><li>Hirdetés kezelése a profilból.</li><li>Vásárlás indítása a piactéri kosárból.</li><li>Problémás hirdetés bejelentése az ügyfélszolgálaton.</li></ul></section>
+      <section class="card"><h2>Kapcsolat</h2><p>Írd le röviden, miben segíthetünk, és add meg a regisztrált e-mail-címedet is.</p><a class="contact" href="mailto:tamogatas@bikex.hu">tamogatas@bikex.hu</a></section>
+    </div>
+  </main>
+  <footer><a href="rolunk.html">Rólunk</a><a href="aszf.html">ÁSZF</a><a href="adatvedelmi-tajekoztato.html">Adatvédelem</a><div style="margin-top:.7rem;">© 2026 BikeX. Minden jog fenntartva.</div></footer>
+</body>
+</html>

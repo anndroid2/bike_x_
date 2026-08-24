@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BikeX – Regisztráció</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .site-search { width: min(240px, 100%) !important; height: 38px; padding: 0 .8rem 0 2.2rem !important; border: 1px solid #374151 !important; border-radius: .5rem !important; background: #1f2937 !important; color: white !important; outline: none; font: inherit; font-size: .85rem; }
+    .site-search:focus { border-color: #60a5fa !important; box-shadow: 0 0 0 3px rgba(96,165,250,.12); }
+    .site-search::placeholder { color: #6b7280; }
+    body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: white; min-height: 100vh; display: flex; flex-direction: column; }
+    a { text-decoration: none; color: inherit; }
+    .bg-pattern { position: fixed; inset: 0; background: radial-gradient(ellipse at 20% 50%, rgba(59,130,246,.12) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(139,92,246,.1) 0%, transparent 50%); pointer-events: none; }
+    .nav { background: rgba(17,24,39,.8); backdrop-filter: blur(10px); border-bottom: 1px solid #1f2937; padding: 0 2rem; display: flex; align-items: center; height: 60px; }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-link { color: #d1d5db; font-size: .95rem; transition: color .2s; text-decoration: none; }
+    .nav-link:hover { color: white; }
+    .logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+    .card { background: #1f2937; border: 1px solid #374151; border-radius: 1rem; padding: 2.5rem; width: 100%; max-width: 480px; }
+    .form-group { margin-bottom: 1rem; }
+    .form-label { display: block; font-size: .85rem; color: #9ca3af; margin-bottom: .4rem; }
+    .form-input { width: 100%; background: #111827; border: 1px solid #374151; border-radius: .5rem; padding: .7rem 1rem; color: white; font-size: .95rem; outline: none; transition: border-color .2s; }
+    .form-input:focus { border-color: #3b82f6; }
+    .form-input::placeholder { color: #4b5563; }
+    .btn-primary { width: 100%; background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; border: none; padding: .85rem; border-radius: .6rem; font-weight: 700; font-size: 1rem; cursor: pointer; transition: opacity .2s; margin-top: .5rem; }
+    .btn-primary:hover { opacity: .9; }
+    .btn-gray { background: #374151; color: #d1d5db; border: none; padding: .85rem; border-radius: .6rem; font-weight: 600; font-size: 1rem; cursor: pointer; width: 100%; margin-top: .5rem; }
+    .btn-gray:hover { background: #4b5563; }
+    .type-btn { flex: 1; padding: .75rem; border: 2px solid #374151; border-radius: .6rem; background: #111827; color: #9ca3af; font-weight: 600; cursor: pointer; text-align: center; transition: all .2s; font-size: .95rem; }
+    .type-btn.active { border-color: #3b82f6; color: white; background: rgba(59,130,246,.15); }
+    .step { display: none; }
+    .step.active { display: block; }
+    .step-indicator { display: flex; align-items: center; gap: .5rem; margin-bottom: 1.75rem; }
+    .step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: 700; }
+    .step-dot.done { background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; }
+    .step-dot.current { background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; }
+    .step-dot.pending { background: #374151; color: #6b7280; }
+    .step-line { flex: 1; height: 2px; background: #374151; }
+    .step-line.done { background: #3b82f6; }
+    .code-input { display: flex; gap: .5rem; justify-content: center; margin: 1.5rem 0; }
+    .code-box { width: 52px; height: 60px; background: #111827; border: 2px solid #374151; border-radius: .5rem; text-align: center; font-size: 1.5rem; font-weight: 700; color: white; outline: none; transition: border-color .2s; }
+    .code-box:focus { border-color: #3b82f6; }
+    .link-blue { color: #60a5fa; font-weight: 600; }
+    .link-blue:hover { text-decoration: underline; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+</head>
+<body>
+<div class="bg-pattern"></div>
+<nav class="nav">
+  <div style="display: flex; align-items: center; gap: 2rem; flex: 1;">
+    <a href="index.html" class="logo">🚲 BikeX</a>
+    <div class="nav-links" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <a href="index.html" class="nav-link">Főoldal</a>
+      <form action="marketplace.html" method="get" style="display:flex;align-items:center;position:relative;">
+        <span style="position:absolute;left:.8rem;color:#6b7280;">🔍</span>
+        <input name="q" type="search" class="site-search" placeholder="Keresés..." />
+      </form>
+      <a href="marketplace.html" class="nav-link">Piactér</a>
+      <a href="analytics.html" class="nav-link">Analytics</a>
+      <a href="shows.html" class="nav-link">Versenyek</a>
+      <a href="parks.html" class="nav-link">Parkok</a>
+      <a href="travel.html" class="nav-link">Utazás</a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="card">
+
+    <!-- STEP INDICATOR -->
+    <div class="step-indicator" id="stepIndicator">
+      <div class="step-dot current" id="dot1">1</div>
+      <div class="step-line" id="line1"></div>
+      <div class="step-dot pending" id="dot2">2</div>
+    </div>
+
+    <!-- STEP 1: Regisztrációs adatok -->
+    <div class="step active" id="step1">
+      <h1 style="font-size:1.5rem;font-weight:800;margin-bottom:.3rem;">Regisztráció 🚲</h1>
+      <p style="color:#9ca3af;font-size:.9rem;margin-bottom:1.5rem;">Hozd létre a BikeX fiókod</p>
+
+      <div style="display:flex;gap:.75rem;margin-bottom:1.25rem;">
+        <div class="type-btn active" id="btnMagan" onclick="setType('magan')">👤 Magánszemély</div>
+        <div class="type-btn" id="btnElado" onclick="setType('elado')">🏪 Eladó / Bolt</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" id="nameLabel">Teljes név</label>
+        <input type="text" class="form-input" id="nameInput" placeholder="Kovács Péter" />
+      </div>
+      <div class="form-group" id="companyGroup" style="display:none;">
+        <label class="form-label">Cég neve</label>
+        <input type="text" class="form-input" id="companyInput" placeholder="BikeShop Kft." />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email cím</label>
+        <input type="email" class="form-input" id="emailInput" placeholder="pelda@email.hu" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Jelszó</label>
+        <input type="password" class="form-input" id="passInput" placeholder="Min. 8 karakter" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Jelszó megerősítése</label>
+        <input type="password" class="form-input" id="pass2Input" placeholder="••••••••" />
+      </div>
+
+      <div style="display:flex;align-items:center;gap:.5rem;margin:.75rem 0;">
+        <input type="checkbox" id="termsCheck" style="width:16px;height:16px;cursor:pointer;" />
+        <label for="termsCheck" style="color:#9ca3af;font-size:.85rem;cursor:pointer;">
+          Elolvastam és elfogadom az <a href="adatvedelmi-tajekoztato.html?from=register" target="_blank" rel="noopener" class="link-blue">Adatvédelmi tájékoztatót</a>
+        </label>
+      </div>
+
+      <button class="btn-primary" onclick="goStep2()">Tovább →</button>
+
+      <p style="text-align:center;color:#9ca3af;font-size:.88rem;margin-top:1.25rem;">
+        Van már fiókod? <a href="login.html" class="link-blue">Bejelentkezés</a>
+      </p>
+    </div>
+
+    <!-- STEP 2: Email megerősítés -->
+    <div class="step" id="step2">
+      <div style="text-align:center;margin-bottom:1.5rem;">
+        <div style="font-size:3rem;margin-bottom:.75rem;">📧</div>
+        <h1 style="font-size:1.4rem;font-weight:800;margin-bottom:.4rem;">Email megerősítés</h1>
+        <p style="color:#9ca3af;font-size:.9rem;">Megerősítő linket küldtünk a megadott email címre</p>
+        <p style="color:#60a5fa;font-size:.9rem;font-weight:600;margin-top:.3rem;" id="emailShow"></p>
+      </div>
+
+      <p style="text-align:center;color:#9ca3af;font-size:.85rem;margin-bottom:1.5rem;">
+        A linkre kattintás után jelentkezz be a fiókodba.
+      </p>
+
+      <button class="btn-primary" onclick="finishReg()">Bejelentkezés</button>
+      <button class="btn-gray" onclick="goBack()">← Vissza</button>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  var userType = 'magan';
+  var pendingVerificationEmail = '';
+  var emailVerifiedSignalKey = 'bikexEmailVerifiedSignal';
+  if (new URLSearchParams(window.location.search).get('privacyAccepted') === '1') {
+    document.getElementById('termsCheck').checked = true;
+  }
+
+  window.addEventListener('storage', function (event) {
+    if (event.key !== emailVerifiedSignalKey || !event.newValue) { return; }
+    try {
+      var signal = JSON.parse(event.newValue);
+      if (!signal || !signal.email || !pendingVerificationEmail) { return; }
+      if (signal.email.toLowerCase() !== pendingVerificationEmail.toLowerCase()) { return; }
+      window.location.href = 'login.html?verified=1&email=' + encodeURIComponent(pendingVerificationEmail);
+    } catch (e) {
+      console.error('Email verification signal parse error:', e);
+    }
+  });
+
+  function setType(t) {
+    userType = t;
+    document.getElementById('btnMagan').className = 'type-btn' + (t==='magan' ? ' active' : '');
+    document.getElementById('btnElado').className = 'type-btn' + (t==='elado' ? ' active' : '');
+    document.getElementById('companyGroup').style.display = t==='elado' ? 'block' : 'none';
+    document.getElementById('nameLabel').textContent = t==='elado' ? 'Kapcsolattartó neve' : 'Teljes név';
+  }
+
+  async function goStep2() {
+    var name = document.getElementById('nameInput').value.trim();
+    var company = document.getElementById('companyInput').value.trim();
+    var email = document.getElementById('emailInput').value.trim();
+    var pass = document.getElementById('passInput').value;
+    var pass2 = document.getElementById('pass2Input').value;
+    var terms = document.getElementById('termsCheck').checked;
+    if (!name || !email || !pass) { alert('Kérjük töltsd ki az összes kötelező mezőt!'); return; }
+    if (userType === 'elado' && !company) { alert('Eladóként add meg a cég vagy üzlet nevét is!'); return; }
+    if (pass !== pass2) { alert('A két jelszó nem egyezik!'); return; }
+    if (pass.length < 6) { alert('A jelszónak legalább 6 karakternek kell lennie!'); return; }
+    if (!terms) { alert('Kérjük fogadd el az Általános Feltételeket!'); return; }
+    var button = document.querySelector('#step1 .btn-primary');
+    button.disabled = true;
+    button.textContent = 'Regisztráció...';
+    var result = await sb.auth.signUp({
+      email: email,
+      password: pass,
+      options: {
+        data: { name: name, company: company, type: userType },
+        emailRedirectTo: window.bikexPublicUrl + '/email-verified.html'
+      }
+    });
+    button.disabled = false;
+    button.textContent = 'Tovább →';
+    if (result.error) {
+      console.error('Supabase signUp error:', result.error);
+      if ((result.error.message || '').indexOf('Unexpected status code returned from hook: 405') !== -1) {
+        alert('A regisztráció most nem fut le, mert a Supabase Auth Hook hibásan van beállítva (405 Method Not Allowed). Javítsd a Supabase Dashboardban a hook endpointot (POST), vagy kapcsold ki a hibás hookot.');
+        return;
+      }
+      alert(result.error.message);
+      return;
+    }
+    if (result.data.session) {
+      localStorage.setItem('bikexSession', JSON.stringify(toBikeXSession(result.data.user)));
+      window.location.href = 'profile.html';
+      return;
+    }
+    pendingVerificationEmail = email;
+    document.getElementById('emailShow').textContent = email;
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('step2').classList.add('active');
+    document.getElementById('dot1').className = 'step-dot done';
+    document.getElementById('line1').className = 'step-line done';
+    document.getElementById('dot2').className = 'step-dot current';
+  }
+
+  function goBack() {
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('step1').classList.add('active');
+    document.getElementById('dot1').className = 'step-dot current';
+    document.getElementById('line1').className = 'step-line';
+    document.getElementById('dot2').className = 'step-dot pending';
+  }
+
+  function finishReg() {
+    window.location.href = 'login.html';
+  }
+</script>
+</body>
+</html>

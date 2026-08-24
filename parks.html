@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BikeX – Parkok</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .site-search { width: min(240px, 100%) !important; height: 38px; padding: 0 .8rem 0 2.2rem !important; border: 1px solid #374151 !important; border-radius: .5rem !important; background: #1f2937 !important; color: white !important; outline: none; font: inherit; font-size: .85rem; }
+    .site-search:focus { border-color: #60a5fa !important; box-shadow: 0 0 0 3px rgba(96,165,250,.12); }
+    .site-search::placeholder { color: #6b7280; }
+    body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: white; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    .nav { background: #111827; border-bottom: 1px solid #1f2937; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .nav-links { display: flex; gap: 1.25rem; align-items: center; }
+    .nav-link { color: #d1d5db; font-size: .9rem; transition: color .2s; }
+    .nav-link:hover, .nav-link.active { color: white; }
+    .btn-outline { border: 1px solid #374151; color: #d1d5db; background: transparent; padding: .4rem .9rem; border-radius: .5rem; font-size: .85rem; cursor: pointer; display: inline-block; }
+    .card { background: #1f2937; border: 1px solid #374151; border-radius: .75rem; overflow: hidden; transition: border-color .2s, transform .2s; cursor: pointer; }
+    .card:hover { border-color: #3b82f6; transform: translateY(-2px); }
+    .card-static { background: #1f2937; border: 1px solid #374151; border-radius: .75rem; overflow: hidden; }
+    .park-img { width: 100%; height: 170px; object-fit: cover; }
+    .badge { display: inline-block; padding: .15rem .55rem; border-radius: 9999px; font-size: .72rem; font-weight: 600; }
+    .badge-green { background: rgba(34,197,94,.2); color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+    .badge-blue { background: rgba(59,130,246,.2); color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+    .badge-yellow { background: rgba(234,179,8,.2); color: #facc15; border: 1px solid rgba(234,179,8,.3); }
+    .badge-red { background: rgba(239,68,68,.2); color: #f87171; border: 1px solid rgba(239,68,68,.3); }
+    .badge-purple { background: rgba(139,92,246,.2); color: #a78bfa; border: 1px solid rgba(139,92,246,.3); }
+    .filter-btn { padding: .4rem .9rem; border-radius: 9999px; border: 1px solid #374151; background: #111827; color: #9ca3af; font-size: .85rem; cursor: pointer; transition: all .2s; }
+    .filter-btn.active { background: rgba(59,130,246,.2); border-color: #3b82f6; color: #60a5fa; }
+    .tab { padding: .6rem 1.2rem; font-size: .9rem; font-weight: 500; color: #9ca3af; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .2s; }
+    .tab.active { color: #60a5fa; border-bottom-color: #3b82f6; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .star { color: #fbbf24; }
+    .shop-row { display: flex; align-items: center; gap: 1rem; padding: .9rem 1.1rem; border-bottom: 1px solid #374151; transition: background .2s; cursor: pointer; }
+    .shop-row:hover { background: rgba(255,255,255,.03); }
+    .shop-row:last-child { border-bottom: none; }
+    .weather-box { background: #111827; border-radius: .6rem; padding: 1rem; text-align: center; }
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-bg.open { display: flex; }
+    .modal { background: #1f2937; border: 1px solid #374151; border-radius: 1rem; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; }
+    .modal-img { width: 100%; height: 220px; object-fit: cover; }
+    .diff-bar { height: 6px; border-radius: 3px; margin-top: .4rem; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="logo">🚲 BikeX</a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Főoldal</a>
+    <form action="marketplace.html" method="get" style="display:flex;align-items:center;position:relative;margin-right:.5rem;">
+      <span style="position:absolute;left:.8rem;color:#6b7280;">🔍</span>
+      <input name="q" type="search" class="search-input site-search" placeholder="Keresés..." />
+    </form>
+    <a href="marketplace.html" class="nav-link">Piactér</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="shows.html" class="nav-link">Versenyek</a>
+    <a href="parks.html" class="nav-link active">Parkok</a>
+    <a href="travel.html" class="nav-link">Utazás</a>
+    <a href="profile.html" class="nav-link">Profil</a>
+    <a href="login.html" onclick="if(confirm('Kijelentkezés?')) { localStorage.removeItem('bikexSession'); return true; } return false;" class="btn-outline">Kilépés</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div style="background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(139,92,246,.12));border-bottom:1px solid #1f2937;padding:2rem;text-align:center;">
+  <h1 style="font-size:2rem;font-weight:800;margin-bottom:.4rem;">🌲 Bike Parkok & Helyszínek</h1>
+  <p style="color:#9ca3af;">Magyarország legjobb kerékpáros helyszínei és gear boltjai</p>
+</div>
+
+<div style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem;">
+
+  <!-- TAB BAR -->
+  <div style="display:flex;gap:.25rem;border-bottom:1px solid #374151;margin-bottom:1.75rem;">
+    <div class="tab active" onclick="switchTab('parkok',this)">🏔️ Bike Parkok</div>
+    <div class="tab" onclick="switchTab('boltok',this)">🛒 Gear Boltok</div>
+    <div class="tab" onclick="switchTab('idojaras',this)">🌤️ Időjárás</div>
+  </div>
+
+  <!-- TAB: Parkok -->
+  <div class="tab-panel active" id="tab-parkok">
+    <div style="display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <button class="filter-btn active" onclick="setParkFilter('all',this)">Mind</button>
+      <button class="filter-btn" onclick="setParkFilter('mtb',this)">MTB</button>
+      <button class="filter-btn" onclick="setParkFilter('enduro',this)">Enduro</button>
+      <button class="filter-btn" onclick="setParkFilter('bmx',this)">BMX</button>
+      <button class="filter-btn" onclick="setParkFilter('road',this)">Road</button>
+    </div>
+    <div id="parkGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.25rem;"></div>
+  </div>
+
+  <!-- TAB: Boltok -->
+  <div class="tab-panel" id="tab-boltok">
+    <div class="card-static">
+      <div class="shop-row" onclick="alert('Kerékpár Világ\nBudapest, Andrássy út 42.\nTel: +36 1 234 5678\nNyitva: H-P 9-18, Sz 10-15')">
+        <div style="font-size:1.8rem;">🏪</div>
+        <div style="flex:1;">
+          <div style="font-weight:600;">Kerékpár Világ</div>
+          <div style="color:#9ca3af;font-size:.82rem;">Budapest, Andrássy út · 2,4 km</div>
+          <div class="star" style="font-size:.8rem;">★★★★★ <span style="color:#9ca3af;">4.9</span></div>
+        </div>
+        <div><span class="badge badge-green">Nyitva</span></div>
+      </div>
+      <div class="shop-row" onclick="alert('CycleSport Pro\nBudapest, Váci út 112.\nTel: +36 1 987 6543\nNyitva: H-P 10-19, Sz 10-16')">
+        <div style="font-size:1.8rem;">🔧</div>
+        <div style="flex:1;">
+          <div style="font-weight:600;">CycleSport Pro</div>
+          <div style="color:#9ca3af;font-size:.82rem;">Budapest, Váci út · 3,8 km</div>
+          <div class="star" style="font-size:.8rem;">★★★★☆ <span style="color:#9ca3af;">4.6</span></div>
+        </div>
+        <div><span class="badge badge-green">Nyitva</span></div>
+      </div>
+      <div class="shop-row" onclick="alert('MTB Center\nBudapest, Keleti pályaudvar közelében\nSpecializálódva: MTB, Enduro')">
+        <div style="font-size:1.8rem;">🚵</div>
+        <div style="flex:1;">
+          <div style="font-weight:600;">MTB Center</div>
+          <div style="color:#9ca3af;font-size:.82rem;">Budapest, VIII. ker. · 5,1 km</div>
+          <div class="star" style="font-size:.8rem;">★★★★★ <span style="color:#9ca3af;">4.8</span></div>
+        </div>
+        <div><span class="badge badge-yellow">Zárva</span></div>
+      </div>
+      <div class="shop-row" onclick="alert('Bike Factory\nBudapest, Árpád híd\nSzerviz, alkatrészek, bérlés')">
+        <div style="font-size:1.8rem;">🏭</div>
+        <div style="flex:1;">
+          <div style="font-weight:600;">Bike Factory</div>
+          <div style="color:#9ca3af;font-size:.82rem;">Budapest, XIII. ker. · 6,2 km</div>
+          <div class="star" style="font-size:.8rem;">★★★★☆ <span style="color:#9ca3af;">4.4</span></div>
+        </div>
+        <div><span class="badge badge-green">Nyitva</span></div>
+      </div>
+      <div class="shop-row" onclick="alert('Road Rider Shop\nBudapest, XI. ker.\nOrszágúti kerékpárok specialistája')">
+        <div style="font-size:1.8rem;">🛣️</div>
+        <div style="flex:1;">
+          <div style="font-weight:600;">Road Rider Shop</div>
+          <div style="color:#9ca3af;font-size:.82rem;">Budapest, XI. ker. · 7,9 km</div>
+          <div class="star" style="font-size:.8rem;">★★★★★ <span style="color:#9ca3af;">4.7</span></div>
+        </div>
+        <div><span class="badge badge-green">Nyitva</span></div>
+      </div>
+      <div class="shop-row" onclick="alert('BMX Underground\nBudapest, VII. ker.\nBMX és freestyle specialista')">
+        <div style="font-size:1.8rem;">🎪</div>
+        <div style="flex:1;">
+          <div style="font-weight:600;">BMX Underground</div>
+          <div style="color:#9ca3af;font-size:.82rem;">Budapest, VII. ker. · 4,3 km</div>
+          <div class="star" style="font-size:.8rem;">★★★★☆ <span style="color:#9ca3af;">4.5</span></div>
+        </div>
+        <div><span class="badge badge-red">Zárva</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Időjárás -->
+  <div class="tab-panel" id="tab-idojaras">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:1rem;margin-bottom:1.5rem;">
+      <div class="weather-box"><div style="font-size:2.5rem;">⛅</div><div style="font-size:1.5rem;font-weight:800;margin:.3rem 0;">22°C</div><div style="color:#9ca3af;font-size:.8rem;">Ma</div><div style="color:#9ca3af;font-size:.75rem;margin-top:.3rem;">Részben felhős</div></div>
+      <div class="weather-box"><div style="font-size:2.5rem;">🌤️</div><div style="font-size:1.5rem;font-weight:800;margin:.3rem 0;">25°C</div><div style="color:#9ca3af;font-size:.8rem;">Holnap</div><div style="color:#9ca3af;font-size:.75rem;margin-top:.3rem;">Napos</div></div>
+      <div class="weather-box"><div style="font-size:2.5rem;">🌧️</div><div style="font-size:1.5rem;font-weight:800;margin:.3rem 0;">18°C</div><div style="color:#9ca3af;font-size:.8rem;">Csütörtök</div><div style="color:#9ca3af;font-size:.75rem;margin-top:.3rem;">Eső</div></div>
+      <div class="weather-box"><div style="font-size:2.5rem;">⛈️</div><div style="font-size:1.5rem;font-weight:800;margin:.3rem 0;">15°C</div><div style="color:#9ca3af;font-size:.8rem;">Péntek</div><div style="color:#9ca3af;font-size:.75rem;margin-top:.3rem;">Zivatar</div></div>
+      <div class="weather-box"><div style="font-size:2.5rem;">🌤️</div><div style="font-size:1.5rem;font-weight:800;margin:.3rem 0;">21°C</div><div style="color:#9ca3af;font-size:.8rem;">Szombat</div><div style="color:#9ca3af;font-size:.75rem;margin-top:.3rem;">Túlnyomóan napos</div></div>
+      <div class="weather-box"><div style="font-size:2.5rem;">☀️</div><div style="font-size:1.5rem;font-weight:800;margin:.3rem 0;">26°C</div><div style="color:#9ca3af;font-size:.8rem;">Vasárnap</div><div style="color:#9ca3af;font-size:.75rem;margin-top:.3rem;">Napos, szél: 12 km/h</div></div>
+      <div class="weather-box"><div style="font-size:2.5rem;">⛅</div><div style="font-size:1.5rem;font-weight:800;margin:.3rem 0;">23°C</div><div style="color:#9ca3af;font-size:.8rem;">Hétfő</div><div style="color:#9ca3af;font-size:.75rem;margin-top:.3rem;">Változékony</div></div>
+    </div>
+    <div class="card-static" style="padding:1.25rem;">
+      <h3 style="font-weight:700;margin-bottom:1rem;">🚵 Tekerési javaslat</h3>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+        <div style="background:#111827;border-radius:.6rem;padding:.9rem;flex:1;min-width:160px;border:1px solid #374151;">
+          <div style="font-size:1.2rem;margin-bottom:.4rem;">✅</div>
+          <div style="font-weight:600;font-size:.9rem;color:#4ade80;">Ma és holnap</div>
+          <div style="color:#9ca3af;font-size:.82rem;margin-top:.3rem;">Kiváló feltételek. Aszfalt és erdei utak egyaránt szárazzák.</div>
+        </div>
+        <div style="background:#111827;border-radius:.6rem;padding:.9rem;flex:1;min-width:160px;border:1px solid #374151;">
+          <div style="font-size:1.2rem;margin-bottom:.4rem;">⚠️</div>
+          <div style="font-weight:600;font-size:.9rem;color:#facc15;">Csütörtök–Péntek</div>
+          <div style="color:#9ca3af;font-size:.82rem;margin-top:.3rem;">Esős, sáros pályák várhatók. MTB OK, road nem ajánlott.</div>
+        </div>
+        <div style="background:#111827;border-radius:.6rem;padding:.9rem;flex:1;min-width:160px;border:1px solid #374151;">
+          <div style="font-size:1.2rem;margin-bottom:.4rem;">🏆</div>
+          <div style="font-weight:600;font-size:.9rem;color:#60a5fa;">Hétvége</div>
+          <div style="color:#9ca3af;font-size:.82rem;margin-top:.3rem;">Tökéletes hétvégi túrára! Száraz, meleg, szeles lesz vasárnap.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <img id="mImg" class="modal-img" src="" alt="" />
+    <div style="padding:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:.75rem;">
+        <div>
+          <h2 id="mTitle" style="font-size:1.2rem;font-weight:800;"></h2>
+          <div id="mBadges" style="margin-top:.35rem;display:flex;gap:.35rem;flex-wrap:wrap;"></div>
+        </div>
+        <button onclick="closeModal()" style="background:none;border:none;color:#9ca3af;font-size:1.4rem;cursor:pointer;">✕</button>
+      </div>
+      <div id="mMeta" style="color:#9ca3af;font-size:.88rem;margin-bottom:.75rem;"></div>
+      <div id="mDesc" style="color:#d1d5db;font-size:.9rem;line-height:1.6;margin-bottom:1rem;"></div>
+      <div id="mExtras" style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;font-size:.85rem;background:#111827;border-radius:.5rem;padding:1rem;margin-bottom:1.25rem;"></div>
+      <button style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border:none;padding:.6rem 1.3rem;border-radius:.5rem;font-weight:600;cursor:pointer;" onclick="alert('Navigáció indítva!')">🗺️ Navigáció</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var parks = [
+  {id:1,name:'Normafa Bike Park',cat:'mtb',loc:'Budapest, XII. ker.',img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=200&fit=crop',rating:4.8,desc:'Budapest legközelebbi és legkedveltebb MTB területe. Több szintű pályák kezdőktől a haladókig.',tags:['MTB','Trail','Kezdő–Haladó'],nyitva:'Egész nap',belep:'Ingyenes',hossz:'15 km pálya',neh:'Könnyű–Közepes'},
+  {id:2,name:'Bükk Trail Center',cat:'enduro',loc:'Miskolc, Bükk-hg.',img:'https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=500&h=200&fit=crop',rating:4.9,desc:'Észak-Magyarország legnépszerűbb enduro területe. Technikai single-track pályák, csodás erdei környezetben.',tags:['Enduro','Technikai','Expert'],nyitva:'H-V 8:00–19:00',belep:'500 Ft',hossz:'42 km pálya',neh:'Közepes–Nehéz'},
+  {id:3,name:'Mátra Bike Park',cat:'mtb',loc:'Gyöngyös, Mátra',img:'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=500&h=200&fit=crop',rating:4.7,desc:'Liftes bike park a Mátra tetején. Downhill pályák, flow trail, jumps. Bérlési lehetőség.',tags:['DH','Flow','Lift'],nyitva:'Szo-V 9:00–17:00',belep:'3 200 Ft',hossz:'8 km DH',neh:'Nehéz'},
+  {id:4,name:'Pilis Road Circuit',cat:'road',loc:'Esztergom, Pilis',img:'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=500&h=200&fit=crop',rating:4.5,desc:'Kijelölt aszfaltos kerékpárút a Pilis hegységben. Gyönyörű panoráma, jól karbantartott útfelszín.',tags:['Road','Tura','Panoráma'],nyitva:'Egész nap',belep:'Ingyenes',hossz:'68 km körút',neh:'Közepes'},
+  {id:5,name:'Budapest BMX Park',cat:'bmx',loc:'Budapest, XIV. ker.',img:'https://images.unsplash.com/photo-1505705694340-019e1e335916?w=500&h=200&fit=crop',rating:4.6,desc:'Fedett BMX park, egész évben látogatható. Street és park szekciók, kezdő területek.',tags:['BMX','Park','Street'],nyitva:'H-P 12:00–21:00, H-V 10:00–20:00',belep:'800 Ft',hossz:'—',neh:'Minden szint'},
+  {id:6,name:'Mecsek Trail Szombathely',cat:'enduro',loc:'Pécs, Mecsek',img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=200&fit=crop',rating:4.7,desc:'Természetes terepű enduro helyszín. Gravitáció pályák, shuttle elérhető hétvégén.',tags:['Enduro','DH','Shuttle'],nyitva:'Egész nap',belep:'Ingyenes',hossz:'28 km pálya',neh:'Közepes–Nehéz'},
+  {id:7,name:'Velencei Kerékpárút',cat:'road',loc:'Velence, Fejér m.',img:'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=500&h=200&fit=crop',rating:4.4,desc:'Tó melletti sík kerékpárút, tökéletes kezdőknek és pihenős túrázóknak. Csodás vízparti panoráma.',tags:['Road','Sík','Kezdő'],nyitva:'Egész nap',belep:'Ingyenes',hossz:'22 km',neh:'Könnyű'},
+  {id:8,name:'Sopron Lővér Trails',cat:'mtb',loc:'Sopron, Lővér',img:'https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=500&h=200&fit=crop',rating:4.8,desc:'Sopron környéki erdei trail hálózat. Jól jelzett pályák, rendszeresen karbantartott útvonalak.',tags:['MTB','Trail','Erdei'],nyitva:'Egész nap',belep:'Ingyenes',hossz:'55 km hálózat',neh:'Könnyű–Nehéz'},
+  {id:9,name:'Eger Wine Trail (Gravel)',cat:'road',loc:'Eger, Heves m.',img:'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=500&h=200&fit=crop',rating:4.6,desc:'Gravel útvonal az Egri borvidéken keresztül. Szőlőültetvények, pincesorok, megállók borospincéknél.',tags:['Gravel','Borvidék','Kultúra'],nyitva:'Egész nap',belep:'Ingyenes',hossz:'48 km',neh:'Közepes'},
+  {id:10,name:'Pécs Urban BMX',cat:'bmx',loc:'Pécs, Baranya m.',img:'https://images.unsplash.com/photo-1505705694340-019e1e335916?w=500&h=200&fit=crop',rating:4.3,desc:'Szabadtéri urban BMX park. Kőakadályok, korlátok, rámpa. Egész évben ingyenesen látogatható.',tags:['BMX','Urban','Street'],nyitva:'Egész nap',belep:'Ingyenes',hossz:'—',neh:'Minden szint'}
+];
+
+var parkFilter = 'all';
+function setParkFilter(f, el) {
+  parkFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  renderParks();
+}
+
+function catBadge(c) {
+  var map = {mtb:'badge-green',enduro:'badge-red',road:'badge-blue',bmx:'badge-purple'};
+  return '<span class="badge '+(map[c]||'badge-blue')+'">'+c.toUpperCase()+'</span>';
+}
+
+function stars(r) {
+  var s = '';
+  for (var i=0;i<5;i++) s += i < Math.round(r) ? '⭐' : '☆';
+  return s + ' ' + r;
+}
+
+function renderParks() {
+  var list = parks.filter(function(p){ return parkFilter==='all' || p.cat===parkFilter; });
+  document.getElementById('parkGrid').innerHTML = list.map(function(p){
+    return '<div class="card" onclick="openParkModal('+p.id+')">'
+      +'<img class="park-img" src="'+p.img+'" alt="'+p.name+'" />'
+      +'<div style="padding:1rem;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:.4rem;">'
+      +'<div style="font-weight:700;font-size:.95rem;">'+p.name+'</div>'
+      +catBadge(p.cat)
+      +'</div>'
+      +'<div style="color:#9ca3af;font-size:.8rem;margin-bottom:.4rem;">📍 '+p.loc+'</div>'
+      +'<div style="font-size:.82rem;color:#fbbf24;">'+stars(p.rating)+'</div>'
+      +'<div style="margin-top:.6rem;display:flex;gap:.3rem;flex-wrap:wrap;">'
+      +p.tags.map(function(t){ return '<span class="badge badge-blue" style="font-size:.7rem;">'+t+'</span>'; }).join('')
+      +'</div>'
+      +'</div></div>';
+  }).join('');
+}
+
+function openParkModal(id) {
+  var p = parks.find(function(x){ return x.id===id; });
+  document.getElementById('mImg').src = p.img;
+  document.getElementById('mTitle').textContent = p.name;
+  document.getElementById('mBadges').innerHTML = catBadge(p.cat) + '<span style="color:#fbbf24;font-size:.85rem;margin-left:.4rem;">'+stars(p.rating)+'</span>';
+  document.getElementById('mMeta').innerHTML = '📍 '+p.loc;
+  document.getElementById('mDesc').textContent = p.desc;
+  document.getElementById('mExtras').innerHTML =
+    '<div><div style="color:#9ca3af;">Nyitva</div><div style="font-weight:600;">'+p.nyitva+'</div></div>'
+    +'<div><div style="color:#9ca3af;">Belépő</div><div style="font-weight:600;">'+p.belep+'</div></div>'
+    +'<div><div style="color:#9ca3af;">Pályahossz</div><div style="font-weight:600;">'+p.hossz+'</div></div>'
+    +'<div><div style="color:#9ca3af;">Nehézség</div><div style="font-weight:600;">'+p.neh+'</div></div>';
+  document.getElementById('modal').classList.add('open');
+}
+
+function switchTab(name, el) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('tab-'+name).classList.add('active');
+  el.classList.add('active');
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModal(); });
+
+renderParks();
+</script>
+</body>
+</html>

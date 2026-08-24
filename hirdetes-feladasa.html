@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BikeX - Hirdetés feladása</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; background: #0a0e1a; color: #f8fafc; font-family: 'Inter', sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    .nav { min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0 2rem; background: #111827; border-bottom: 1px solid #1f2937; }
+    .logo { background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.4rem; font-weight: 800; }
+    .back { color: #94a3b8; font-size: .88rem; }
+    .back:hover { color: white; }
+    .page { width: min(900px, calc(100% - 2rem)); margin: 0 auto; padding: 3rem 0 5rem; }
+    .eyebrow { color: #60a5fa; font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: .5rem 0 .6rem; font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; }
+    .lead { color: #94a3b8; line-height: 1.6; }
+    .form-card { margin-top: 2rem; padding: clamp(1.25rem, 4vw, 2rem); border: 1px solid #334155; border-radius: 1rem; background: #111827; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .field { display: flex; flex-direction: column; gap: .4rem; }
+    .field.full { grid-column: 1 / -1; }
+    label { color: #cbd5e1; font-size: .84rem; font-weight: 600; }
+    input, select, textarea { width: 100%; border: 1px solid #334155; border-radius: .55rem; padding: .72rem .8rem; background: #0f172a; color: white; outline: none; font: inherit; font-size: .9rem; }
+    input:focus, select:focus, textarea:focus { border-color: #60a5fa; }
+    textarea { min-height: 130px; resize: vertical; line-height: 1.5; }
+    .hint { color: #64748b; font-size: .75rem; }
+    .image-preview { display: none; width: 180px; height: 110px; margin-top: .55rem; border: 1px solid #334155; border-radius: .55rem; object-fit: cover; }
+    .image-preview.show { display: block; }
+    .actions { display: flex; justify-content: flex-end; gap: .7rem; margin-top: 1.4rem; padding-top: 1.2rem; border-top: 1px solid #263449; }
+    .button { border: 1px solid #374151; border-radius: .55rem; padding: .7rem 1rem; color: #d1d5db; background: transparent; cursor: pointer; font: inherit; font-size: .86rem; font-weight: 600; }
+    .button.primary { border: 0; background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; }
+    .error { display: none; margin-bottom: 1rem; padding: .7rem .9rem; border: 1px solid rgba(248,113,113,.35); border-radius: .55rem; background: rgba(239,68,68,.1); color: #fca5a5; font-size: .84rem; }
+    .error.show { display: block; }
+    @media (max-width: 650px) { .nav { padding: .8rem 1rem; } .nav { align-items: flex-start; flex-direction: column; } .form-grid { grid-template-columns: 1fr; } .field.full { grid-column: auto; } .actions { flex-direction: column-reverse; } .button { width: 100%; } }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html" class="logo">🚲 BikeX</a>
+    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <a href="index.html" class="back">Főoldal</a>
+      <a href="marketplace.html" class="back">Piactér</a>
+      <a href="analytics.html" class="back">Analytics</a>
+      <a href="shows.html" class="back">Versenyek</a>
+      <a href="parks.html" class="back">Parkok</a>
+      <a href="travel.html" class="back">Utazás</a>
+      <a href="profile.html" class="back">Profil</a>
+    </div>
+  </nav>
+  <main class="page">
+    <div class="eyebrow">BikeX piactér</div>
+    <h1>Új hirdetés feladása</h1>
+    <p class="lead">Töltsd ki az adatokat, és a hirdetésed azonnal megjelenik a piactéren.</p>
+    <form class="form-card" id="listingForm">
+      <div class="error" id="errorBox"></div>
+      <div class="form-grid">
+        <div class="field full"><label for="name">Termék neve *</label><input id="name" required maxlength="80" placeholder="Például: Trek Marlin 7 MTB" /></div>
+        <div class="field"><label for="price">Ár (Ft) *</label><input id="price" required type="number" min="1" step="1" placeholder="185000" /></div>
+        <div class="field"><label for="year">Évjárat *</label><input id="year" required type="number" min="1900" max="2100" value="2026" /></div>
+        <div class="field"><label for="category">Kategória *</label><select id="category" required><option value="mtb">MTB</option><option value="road">Országúti</option><option value="bmx">BMX</option><option value="alkatresz">Alkatrész</option><option value="felszereles">Felszerelés</option></select></div>
+        <div class="field"><label for="condition">Állapot *</label><select id="condition" required><option>Kiváló</option><option>Újszerű</option><option>Jó</option><option>Használt</option></select></div>
+        <div class="field full"><label for="imageFile">Kép csatolása</label><input id="imageFile" type="file" accept="image/*" /><img id="imagePreview" class="image-preview" alt="A kiválasztott kép előnézete" /><span class="hint">Válassz ki egy képet a gépedről. Maximum 2 MB. URL-t is megadhatsz helyette.</span></div>
+        <div class="field full"><label for="image">Kép URL-je</label><input id="image" type="url" placeholder="https://...jpg" /><span class="hint">Ha saját fájlt csatolsz, az lesz az elsődleges kép.</span></div>
+        <div class="field full"><label for="description">Leírás *</label><textarea id="description" required maxlength="1000" placeholder="Írd le a termék állapotát, felszereltségét és fontosabb tulajdonságait..."></textarea></div>
+      </div>
+      <div class="actions"><a class="button" href="marketplace.html">Mégse</a><button class="button primary" type="submit">Hirdetés közzététele</button></div>
+    </form>
+  </main>
+  <script>
+    var session = JSON.parse(localStorage.getItem('bikexSession') || 'null');
+    if (!session || !session.email) {
+      window.location.href = 'login.html?return=hirdetes-feladasa.html';
+    }
+    var form = document.getElementById('listingForm');
+    var errorBox = document.getElementById('errorBox');
+    var imageFile = document.getElementById('imageFile');
+    var imagePreview = document.getElementById('imagePreview');
+    var defaultImage = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop';
+    imageFile.addEventListener('change', function() {
+      var file = imageFile.files[0];
+      if (!file) {
+        imagePreview.classList.remove('show');
+        return;
+      }
+      if (!file.type.startsWith('image/') || file.size > 2 * 1024 * 1024) {
+        errorBox.textContent = 'Csak képfájl tölthető fel, legfeljebb 2 MB méretben.';
+        errorBox.classList.add('show');
+        imageFile.value = '';
+        imagePreview.classList.remove('show');
+        return;
+      }
+      errorBox.classList.remove('show');
+      var previewReader = new FileReader();
+      previewReader.onload = function() {
+        imagePreview.src = previewReader.result;
+        imagePreview.classList.add('show');
+      };
+      previewReader.readAsDataURL(file);
+    });
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault();
+      var price = Number(document.getElementById('price').value);
+      var image = document.getElementById('image').value.trim();
+      var selectedFile = imageFile.files[0];
+      if (!price || price < 1) {
+        errorBox.textContent = 'Adj meg érvényes árat.';
+        errorBox.classList.add('show');
+        return;
+      }
+      if (selectedFile && (!selectedFile.type.startsWith('image/') || selectedFile.size > 2 * 1024 * 1024)) {
+        errorBox.textContent = 'Csak képfájl tölthető fel, legfeljebb 2 MB méretben.';
+        errorBox.classList.add('show');
+        return;
+      }
+      if (selectedFile) {
+        image = await new Promise(function(resolve, reject) {
+          var reader = new FileReader();
+          reader.onload = function() { resolve(reader.result); };
+          reader.onerror = reject;
+          reader.readAsDataURL(selectedFile);
+        });
+      }
+      var listings = JSON.parse(localStorage.getItem('bikexListings') || '[]');
+      listings.push({
+        id: Date.now(), name: document.getElementById('name').value.trim(), price: price,
+        cat: document.getElementById('category').value, cond: document.getElementById('condition').value,
+        year: Number(document.getElementById('year').value), img: image || defaultImage,
+        desc: document.getElementById('description').value.trim(), tags: ['Saját hirdetés'],
+        ownerEmail: session.email, ownerName: session.displayName || session.name || session.email.split('@')[0],
+        ownerType: session.type || 'magan', ownerCompany: session.company || ''
+      });
+      localStorage.setItem('bikexListings', JSON.stringify(listings));
+      window.location.href = 'marketplace.html?added=1';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BikeX – Piactér</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: white; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    .nav { background: #111827; border-bottom: 1px solid #1f2937; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 64px; position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .nav-links { display: flex; gap: 1.25rem; align-items: center; }
+    .nav-link { color: #d1d5db; font-size: .9rem; transition: color .2s; }
+    .nav-link:hover, .nav-link.active { color: white; }
+    .btn-outline { border: 1px solid #374151; color: #d1d5db; background: transparent; padding: .4rem .9rem; border-radius: .5rem; font-size: .85rem; cursor: pointer; }
+    .btn-primary { background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; border: none; padding: .5rem 1.1rem; border-radius: .5rem; font-size: .85rem; font-weight: 600; cursor: pointer; display: inline-block; }
+    .badge { display: inline-block; padding: .15rem .55rem; border-radius: 9999px; font-size: .72rem; font-weight: 600; }
+    .badge-green { background: rgba(34,197,94,.2); color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+    .badge-blue { background: rgba(59,130,246,.2); color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+    .badge-yellow { background: rgba(234,179,8,.2); color: #facc15; border: 1px solid rgba(234,179,8,.3); }
+    .badge-red { background: rgba(239,68,68,.2); color: #f87171; border: 1px solid rgba(239,68,68,.3); }
+    .card { background: #1f2937; border: 1px solid #374151; border-radius: .75rem; }
+    .prod-card { background: #1f2937; border: 1px solid #374151; border-radius: .75rem; overflow: hidden; cursor: pointer; transition: border-color .2s, transform .2s; }
+    .prod-card:hover { border-color: #3b82f6; transform: translateY(-2px); }
+    .prod-img { width: 100%; height: 170px; object-fit: cover; }
+    .product-actions { display: flex; gap: .5rem; margin-top: .8rem; }
+    .product-action { flex: 1; border: 1px solid #374151; border-radius: .5rem; padding: .5rem .65rem; color: white; background: #111827; cursor: pointer; font-size: .8rem; font-weight: 600; }
+    .product-action:hover { border-color: #60a5fa; }
+    .product-action.buy { border-color: #10b981; background: rgba(16,185,129,.15); color: #6ee7b7; }
+    .listing-success { display: none; margin-bottom: 1rem; padding: .8rem 1rem; border: 1px solid rgba(52,211,153,.35); border-radius: .65rem; background: rgba(16,185,129,.12); color: #6ee7b7; font-size: .88rem; }
+    .listing-success.show { display: block; }
+    .session-bar { display: flex; align-items: center; gap: .65rem; padding: .4rem .55rem .4rem .75rem; border: 1px solid rgba(96,165,250,.3); border-radius: .65rem; background: rgba(59,130,246,.1); color: #cbd5e1; font-size: .76rem; white-space: nowrap; }
+    .session-bar strong { color: #93c5fd; }
+    .manage-link { border-radius: .45rem; padding: .42rem .65rem; background: #2563eb; color: white; font-size: .74rem; font-weight: 700; white-space: nowrap; }
+    .manage-link:hover { background: #3b82f6; }
+    .session-logout { border: 0; border-radius: .45rem; padding: .42rem .65rem; background: transparent; color: #fca5a5; cursor: pointer; font: inherit; font-size: .74rem; font-weight: 700; white-space: nowrap; }
+    .session-logout:hover { background: rgba(248,113,113,.12); }
+    @media (max-width: 1100px) { .session-bar span { display: none; } }
+    @media (max-width: 768px) { .nav { padding: .8rem 1rem; flex-wrap: wrap; } .nav-links { gap: .7rem; } .session-bar { order: 3; width: 100%; justify-content: center; } }
+    .filter-btn { padding: .4rem .9rem; border-radius: 9999px; border: 1px solid #374151; background: #111827; color: #9ca3af; font-size: .85rem; cursor: pointer; transition: all .2s; white-space: nowrap; }
+    .filter-btn.active { background: rgba(59,130,246,.2); border-color: #3b82f6; color: #60a5fa; }
+    .search-wrap { position: relative; }
+    .search-input { background: #1f2937; border: 1px solid #374151; border-radius: .5rem; padding: .55rem .75rem .55rem 2.2rem; color: white; font-size: .9rem; outline: none; width: 240px; }
+    .search-input:focus { border-color: #3b82f6; }
+    .site-search { width: min(240px, 100%) !important; height: 38px; padding: 0 .8rem 0 2.2rem !important; border: 1px solid #374151 !important; border-radius: .5rem !important; background: #1f2937 !important; color: white !important; outline: none; font: inherit; font-size: .85rem; }
+    .site-search:focus { border-color: #60a5fa !important; box-shadow: 0 0 0 3px rgba(96,165,250,.12); }
+    .site-search::placeholder { color: #6b7280; }
+    .search-icon { position: absolute; left: .6rem; top: 50%; transform: translateY(-50%); color: #6b7280; font-size: .95rem; }
+    .select-input { background: #1f2937; border: 1px solid #374151; border-radius: .5rem; padding: .5rem .75rem; color: white; font-size: .85rem; outline: none; cursor: pointer; }
+    /* MODAL */
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(3,7,18,.82); backdrop-filter: blur(8px); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-bg.open { display: flex; }
+    .modal { background: #111827; border: 1px solid #334155; border-radius: 1.25rem; width: 100%; max-width: 720px; max-height: 92vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,.55); }
+    .modal-img-wrap { position: relative; background: #0b1220; }
+    .modal-img { display: block; width: 100%; height: 300px; object-fit: cover; }
+    .modal-content { padding: 1.5rem; }
+    .modal-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: .85rem; }
+    .modal-title { font-size: 1.55rem; line-height: 1.2; font-weight: 800; color: #f8fafc; }
+    .modal-close { flex: 0 0 auto; width: 2.25rem; height: 2.25rem; border: 1px solid #334155; border-radius: 50%; background: #1e293b; color: #cbd5e1; cursor: pointer; font-size: 1.1rem; }
+    .modal-close:hover { background: #334155; color: white; }
+    .modal-price-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+    .modal-price { color: #60a5fa; font-size: 1.65rem; font-weight: 800; }
+    .modal-meta { color: #94a3b8; font-size: .8rem; }
+    .modal-info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-bottom: 1.1rem; }
+    .modal-info-card { min-width: 0; padding: 1rem; border: 1px solid #334155; border-radius: .85rem; background: #172033; }
+    .modal-info-card.description { grid-column: 1 / -1; background: #18243a; }
+    .modal-label { margin-bottom: .5rem; color: #93c5fd; font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .modal-value { color: #e2e8f0; font-size: .88rem; line-height: 1.65; }
+    .modal-tags { display: flex; gap: .45rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .modal-actions { display: flex; gap: .65rem; flex-wrap: wrap; padding-top: 1.1rem; border-top: 1px solid #334155; }
+    .modal-action { flex: 1; min-width: 150px; border: 0; border-radius: .65rem; padding: .7rem 1rem; color: white; background: #2563eb; cursor: pointer; font-size: .85rem; font-weight: 700; }
+    .modal-action:hover { filter: brightness(1.12); }
+    .modal-action.buy { background: linear-gradient(135deg,#059669,#10b981); }
+    .modal-action.secondary { background: #263449; }
+    @media (max-width: 600px) {
+      .modal-img { height: 220px; }
+      .modal-content { padding: 1.1rem; }
+      .modal-title { font-size: 1.25rem; }
+      .modal-price-row { align-items: flex-start; flex-direction: column; gap: .35rem; }
+      .modal-info-grid { grid-template-columns: 1fr; }
+      .modal-info-card.description { grid-column: auto; }
+    }
+    .page-btn { padding: .4rem .75rem; border: 1px solid #374151; border-radius: .4rem; background: #1f2937; color: #9ca3af; cursor: pointer; font-size: .85rem; transition: all .2s; }
+    .page-btn:hover, .page-btn.active { background: #3b82f6; border-color: #3b82f6; color: white; }
+    .cart-fab { position: fixed; right: 1rem; bottom: 1rem; z-index: 150; background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; border: none; border-radius: 9999px; padding: .85rem 1.1rem; cursor: pointer; font-weight: 700; box-shadow: 0 12px 28px rgba(59,130,246,.35); }
+    .cart-panel { position: fixed; right: 1rem; bottom: 4.5rem; width: min(420px, calc(100vw - 2rem)); background: rgba(17,24,39,.96); border: 1px solid #374151; border-radius: 1rem; box-shadow: 0 18px 40px rgba(0,0,0,.35); z-index: 140; display: none; }
+    .cart-panel.open { display: block; }
+    .cart-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1rem .75rem; border-bottom: 1px solid #374151; }
+    .cart-body { max-height: 320px; overflow-y: auto; padding: .75rem 1rem 1rem; }
+    .cart-item { display: flex; align-items: center; gap: .75rem; background: #1f2937; border: 1px solid #374151; border-radius: .75rem; padding: .6rem; margin-bottom: .6rem; }
+    .cart-item img { width: 56px; height: 56px; object-fit: cover; border-radius: .5rem; }
+    .cart-item strong { display: block; font-size: .82rem; color: #f3f4f6; }
+    .cart-item span { color: #9ca3af; font-size: .72rem; }
+    .cart-total { display: flex; justify-content: space-between; align-items: center; padding: .75rem 1rem 1rem; font-weight: 700; border-top: 1px solid #374151; }
+    .cart-empty { color: #9ca3af; font-size: .85rem; padding: .5rem 0; }
+    .checkout-box { margin-top: .75rem; padding: .75rem 1rem 1rem; border-top: 1px solid #374151; }
+    .checkout-btn { width: 100%; background: linear-gradient(135deg,#10b981,#34d399); color: white; border: none; border-radius: .7rem; padding: .8rem 1rem; font-weight: 700; cursor: pointer; }
+    .checkout-btn:disabled { opacity: .6; cursor: not-allowed; }
+    .checkout-note { color: #9ca3af; font-size: .76rem; margin-top: .5rem; text-align: center; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="logo">🚲 BikeX</a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Főoldal</a>
+    <a href="marketplace.html" class="nav-link active">Piactér</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="shows.html" class="nav-link">Versenyek</a>
+    <a href="parks.html" class="nav-link">Parkok</a>
+    <a href="travel.html" class="nav-link">Utazás</a>
+    <a href="profile.html" class="nav-link">Profil</a>
+  </div>
+  <div class="session-bar" id="sessionBar"></div>
+</nav>
+
+<button class="cart-fab" onclick="toggleCart()" id="cartFab">🛒 Kosár (0)</button>
+
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-header">
+   <strong>Kosár</strong>
+   <button onclick="toggleCart()" style="background:none;border:none;color:#9ca3af;cursor:pointer;font-size:1.2rem;">✕</button>
+  </div>
+  <div class="cart-body" id="cartItems"></div>
+  <div class="cart-total">
+   <span>Összesen</span>
+   <span id="cartTotal">0 Ft</span>
+  </div>
+  <div class="checkout-box">
+   <button class="checkout-btn" id="checkoutBtn" onclick="goToCheckout()" disabled>Fizetéshez jelentkezz be</button>
+   <div class="checkout-note">A fizetés később egy partner szolgáltatóhoz lesz kötve.</div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div style="background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(139,92,246,.1));border-bottom:1px solid #1f2937;padding:2rem;text-align:center;">
+  <h1 style="font-size:2rem;font-weight:800;margin-bottom:.4rem;">Kerékpár Piactér 🚲</h1>
+  <p style="color:#9ca3af;">Vásárolj, adj el — ezrek között a legjobb ajánlatok</p>
+  <div style="display:flex;justify-content:center;gap:2rem;margin-top:1.25rem;flex-wrap:wrap;">
+    <div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#60a5fa;">1 240</div><div style="color:#9ca3af;font-size:.8rem;">Aktív hirdetés</div></div>
+    <div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#a78bfa;">8 400+</div><div style="color:#9ca3af;font-size:.8rem;">Regisztrált felhasználó</div></div>
+    <div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#34d399;">98%</div><div style="color:#9ca3af;font-size:.8rem;">Elégedett vevő</div></div>
+  </div>
+</div>
+
+<div style="max-width:1200px;margin:0 auto;padding:1.5rem;">
+  <div class="listing-success" id="listingSuccess">A hirdetésed sikeresen megjelent a piactéren.</div>
+
+  <!-- SZŰRŐK -->
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input site-search" placeholder="Keresés..." onkeyup="filterProducts()" id="searchBox" />
+    </div>
+    <select class="select-input" onchange="filterProducts()" id="sortBox">
+      <option value="">Rendezés</option>
+      <option value="asc">Ár: olcsótól</option>
+      <option value="desc">Ár: drágától</option>
+    </select>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+      <button class="filter-btn active" onclick="setFilter('all',this)">Mind</button>
+      <button class="filter-btn" onclick="setFilter('mtb',this)">MTB</button>
+      <button class="filter-btn" onclick="setFilter('road',this)">Országúti</button>
+      <button class="filter-btn" onclick="setFilter('bmx',this)">BMX</button>
+      <button class="filter-btn" onclick="setFilter('alkatresz',this)">Alkatrész</button>
+      <button class="filter-btn" onclick="setFilter('felszereles',this)">Felszerelés</button>
+    </div>
+    <a class="btn-primary" href="hirdetes-feladasa.html">+ Hirdetés feladása</a>
+  </div>
+
+  <!-- TERMÉK RÁCS -->
+  <div id="productGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;"></div>
+
+  <!-- LAPOZÓ -->
+  <div id="paginator" style="display:flex;gap:.5rem;justify-content:center;margin-top:2rem;"></div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="modal-img-wrap">
+      <img id="modalImg" class="modal-img" src="" alt="" />
+    </div>
+    <div class="modal-content">
+      <div class="modal-top">
+        <div>
+          <h2 id="modalTitle" class="modal-title"></h2>
+          <div id="modalBadge" style="margin-top:.5rem;"></div>
+        </div>
+        <button class="modal-close" onclick="closeModal()" aria-label="Bezárás">✕</button>
+      </div>
+      <div class="modal-price-row">
+        <div id="modalPrice" class="modal-price"></div>
+        <div class="modal-meta">Biztonságos vásárlás a BikeX piacterén</div>
+      </div>
+
+     <div class="modal-info-grid">
+       <div class="modal-info-card description">
+         <div class="modal-label">Leírás</div>
+         <div id="modalDesc" class="modal-value"></div>
+       </div>
+       <div class="modal-info-card">
+         <div class="modal-label">Elérhetőség</div>
+         <div id="modalContact" class="modal-value"></div>
+       </div>
+       <div class="modal-info-card">
+         <div class="modal-label">Fizetési lehetőségek</div>
+         <div id="modalPayment" class="modal-value"></div>
+       </div>
+     </div>
+
+     <div class="modal-tags" id="modalTags"></div>
+     <div class="modal-actions">
+       <button class="modal-action" onclick="alert('Üzenet elküldve az eladónak!')">💬 Kapcsolatfelvétel</button>
+       <button class="modal-action buy" onclick="startPurchase()">🛒 Vásárlás most</button>
+       <button class="modal-action secondary" onclick="alert('Kedvencekhez adva!')">❤️ Kedvenc</button>
+     </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var products = [
+  {id:1,name:'Trek Marlin 7 MTB',price:185000,cat:'mtb',cond:'Kiváló',year:2022,img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop',desc:'Alig használt Trek Marlin 7 MTB kerékpár. 29-es kerekek, Shimano Deore váltó, hydraulikus tárcsafék. Tökéletes állapot, minden szerviz elvégezve.',tags:['29"','Shimano Deore','Hydraulikus fék']},
+  {id:2,name:'Specialized Stumpjumper',price:420000,cat:'mtb',cond:'Újszerű',year:2023,img:'https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=400&h=200&fit=crop',desc:'Full-suspension Specialized Stumpjumper 2023. Fox villával és hátsó lengéscsillapítóval. Csak 200 km-t ment.',tags:['Full-sus','Fox','SRAM Eagle']},
+  {id:3,name:'Giant Contend AR Road',price:230000,cat:'road',cond:'Jó',year:2021,img:'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=400&h=200&fit=crop',desc:'Alumínium váz, karbonvillával. Shimano Tiagra 10 sebességes. Kiváló városi és túra kerékpár.',tags:['Alumínium','Shimano Tiagra','700c']},
+  {id:4,name:'Cannondale SuperSix EVO',price:680000,cat:'road',cond:'Kiváló',year:2022,img:'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&h=200&fit=crop',desc:'Karbon versenykerékpár, Ultegra Di2 elektronikus váltóval. Versenyekre ideális, szinte vadonatúj.',tags:['Karbon','Di2','Ultegra']},
+  {id:5,name:'BMX Sunday Blueprint',price:95000,cat:'bmx',cond:'Használt',year:2020,img:'https://images.unsplash.com/photo-1505705694340-019e1e335916?w=400&h=200&fit=crop',desc:'Street BMX, 20-as kerekek, króm-molibdén váz, chromoly hajtás. Tricks-re alkalmas.',tags:['Chromoly','20"','Street']},
+  {id:6,name:'Fox 36 Factory Teleszkóp',price:155000,cat:'alkatresz',cond:'Újszerű',year:2023,img:'https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=400&h=200&fit=crop',desc:'Fox 36 Factory 160mm futású teleszkóp. Csak 1 szezon, szervizelt, olaj cserélve.',tags:['160mm','Fox Factory','27.5"']},
+  {id:7,name:'Shimano XT M8100 Váltó',price:28500,cat:'alkatresz',cond:'Újszerű',year:2023,img:'https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=400&h=200&fit=crop',desc:'Shimano XT M8100 12 seb hátsó váltó. Tökéletes állapot, alig 50 km futott.',tags:['12 seb','Shimano XT','MTB']},
+  {id:8,name:'Troy Lee A3 Sisak M',price:42000,cat:'felszereles',cond:'Jó',year:2022,img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop',desc:'MTB sisak, MIPS rendszerrel. M-es méret, keveset használt. Eredeti dobozával.',tags:['MIPS','MTB','M méret']},
+  {id:9,name:'Orbea Orca Road Karbon',price:540000,cat:'road',cond:'Kiváló',year:2022,img:'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=400&h=200&fit=crop',desc:'Teljes karbon Orbea Orca. Shimano 105 Di2, aerodinamikus gerinc. Verseny szintre kész.',tags:['Karbon','105 Di2','Aero']},
+  {id:10,name:'Cube Stereo Hybrid 140',price:780000,cat:'mtb',cond:'Újszerű',year:2023,img:'https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=400&h=200&fit=crop',desc:'Elektromos full-suspension MTB. Bosch Performance Line CX motor, 625Wh akkumulátor.',tags:['E-MTB','Bosch','625Wh']},
+  {id:11,name:'Crankbrothers Stamp pedál',price:14900,cat:'alkatresz',cond:'Jó',year:2022,img:'https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=400&h=200&fit=crop',desc:'Platform pedál MTB-re. Alumínium, tapadócsapokkal. Pár szezon, de tökéletes állapot.',tags:['Platform','Alumínium','MTB']},
+  {id:12,name:'100% Racecraft szemüveg',price:18500,cat:'felszereles',cond:'Kiváló',year:2023,img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop',desc:'MTB szemüveg, cserélhető lencsével. UV400 védelem, anti-fog bevonat.',tags:['UV400','Anti-fog','MTB']},
+  {id:13,name:'Scott Scale RC 900 SL',price:890000,cat:'mtb',cond:'Újszerű',year:2023,img:'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&h=200&fit=crop',desc:'Verseny XC karbon MTB. SRAM XX1 Eagle, Fox 32 villa. Bajnokság szintű felszerelés.',tags:['XC Karbon','SRAM XX1','Fox 32']},
+  {id:14,name:'BMX Wethepeople Trust',price:75000,cat:'bmx',cond:'Használt',year:2021,img:'https://images.unsplash.com/photo-1505705694340-019e1e335916?w=400&h=200&fit=crop',desc:'Park/street BMX, jól karbantartott. Néhány kopásnyom a vázon, de minden megbízhatóan működik.',tags:['Park','Street','20"']},
+  {id:15,name:'Sram Eagle AXS Váltó',price:89000,cat:'alkatresz',cond:'Újszerű',year:2023,img:'https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=400&h=200&fit=crop',desc:'Vezeték nélküli elektronikus MTB váltó. 12 sebességes, tökéletes állapot.',tags:['Wireless','12 seb','AXS']},
+  {id:16,name:'POC Tectal Race Sisak L',price:65000,cat:'felszereles',cond:'Jó',year:2022,img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop',desc:'Enduro/trail sisak MIPS-szel. L méret, skandináv fehér szín. Keveset használt.',tags:['MIPS','Enduro','L méret']},
+  {id:17,name:'Merida Scultura 4000',price:310000,cat:'road',cond:'Jó',year:2020,img:'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=400&h=200&fit=crop',desc:'Alumínium/karbon vegyes verseny kerékpár. Shimano 105 váltó, aerodinamikus kormány.',tags:['Alu/Karbon','Shimano 105','Road']},
+  {id:18,name:'Rockshox Reverb Ülőcső',price:38000,cat:'alkatresz',cond:'Kiváló',year:2022,img:'https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=400&h=200&fit=crop',desc:'Dropper ülőcső 31.6mm átmérőjű, 150mm futás. Csapkormányos vezérlés.',tags:['Dropper','150mm','31.6mm']}
+];
+
+var savedListings = JSON.parse(localStorage.getItem('bikexListings') || '[]');
+var removedListingNames = ['janika', 'elado motor', 'elado motort'];
+var cleanedListings = savedListings.filter(function(listing) {
+  var listingName = String(listing.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  return removedListingNames.indexOf(listingName) === -1;
+});
+if (cleanedListings.length !== savedListings.length) {
+  localStorage.setItem('bikexListings', JSON.stringify(cleanedListings));
+}
+savedListings = cleanedListings;
+products = savedListings.concat(products);
+
+var currentFilter = 'all';
+var currentPage = 1;
+var perPage = 9;
+
+function setFilter(f, el) {
+  currentFilter = f;
+  currentPage = 1;
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  render();
+}
+
+function filterProducts() { currentPage = 1; render(); }
+
+function getFiltered() {
+  var q = document.getElementById('searchBox').value.toLowerCase();
+  var sort = document.getElementById('sortBox').value;
+  var list = products.filter(function(p){
+    var catOk = currentFilter==='all' || p.cat===currentFilter;
+    var qOk = !q || p.name.toLowerCase().includes(q);
+    return catOk && qOk;
+  });
+  if (sort==='asc') list.sort(function(a,b){ return a.price-b.price; });
+  if (sort==='desc') list.sort(function(a,b){ return b.price-a.price; });
+  return list;
+}
+
+function condBadge(c) {
+  if (c==='Újszerű') return '<span class="badge badge-green">'+c+'</span>';
+  if (c==='Kiváló') return '<span class="badge badge-blue">'+c+'</span>';
+  if (c==='Jó') return '<span class="badge badge-yellow">'+c+'</span>';
+  return '<span class="badge badge-red">'+c+'</span>';
+}
+
+function render() {
+  var list = getFiltered();
+  var total = list.length;
+  var pages = Math.ceil(total/perPage);
+  var start = (currentPage-1)*perPage;
+  var page = list.slice(start, start+perPage);
+  var grid = document.getElementById('productGrid');
+  grid.innerHTML = page.map(function(p){
+    return '<div class="prod-card" onclick="openModal('+p.id+')">'
+      +'<img class="prod-img" src="'+p.img+'" alt="'+p.name+'" />'
+      +'<div style="padding:.9rem;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:.35rem;">'
+      +'<div style="font-weight:600;font-size:.9rem;line-height:1.3;">'+p.name+'</div>'
+      +condBadge(p.cond)
+      +'</div>'
+      +'<div style="color:#60a5fa;font-weight:700;font-size:1rem;margin-bottom:.35rem;">'+p.price.toLocaleString('hu-HU')+' Ft</div>'
+      +'<div style="color:#9ca3af;font-size:.78rem;">'+p.year+' &middot; '+p.cat+'</div>'
+      +'<div class="product-actions">'
+      +'<button class="product-action buy" onclick="buyProduct('+p.id+', event)">🛒 Vásárlás</button>'
+      +'<button class="product-action" onclick="showProductDetails('+p.id+', event)">Részletek</button>'
+      +'</div>'
+      +'</div></div>';
+  }).join('');
+  var pag = document.getElementById('paginator');
+  pag.innerHTML = '';
+  for (var i=1;i<=pages;i++){
+    var btn = document.createElement('button');
+    btn.className = 'page-btn'+(i===currentPage?' active':'');
+    btn.textContent = i;
+    btn.setAttribute('data-p', i);
+    btn.onclick = function(){ currentPage=parseInt(this.getAttribute('data-p')); render(); };
+    pag.appendChild(btn);
+  }
+}
+
+function applySearchFromUrl() {
+  var params = new URLSearchParams(window.location.search);
+  var q = params.get('q');
+  if (!q) return;
+  var searchBox = document.getElementById('searchBox');
+  if (searchBox) {
+    searchBox.value = q;
+    currentPage = 1;
+    render();
+  }
+}
+
+var currentProductId = null;
+var cart = JSON.parse(localStorage.getItem('bikexCart') || '[]');
+
+function renderCart() {
+  var cartItems = document.getElementById('cartItems');
+  var cartTotal = document.getElementById('cartTotal');
+  var cartFab = document.getElementById('cartFab');
+  var checkoutBtn = document.getElementById('checkoutBtn');
+
+  if (!cart.length) {
+    cartItems.innerHTML = '<div class="cart-empty">A kosár üres. Adj hozzá néhány terméket.</div>';
+    cartTotal.textContent = '0 Ft';
+    cartFab.textContent = '🛒 Kosár (0)';
+    checkoutBtn.disabled = true;
+    return;
+  }
+
+  var total = cart.reduce(function(sum, item){ return sum + item.price; }, 0);
+  cartItems.innerHTML = cart.map(function(item){
+    return '<div class="cart-item">'
+      + '<img src="' + item.img + '" alt="' + item.name + '" />'
+      + '<div style="flex:1;min-width:0;">'
+      + '<strong>' + item.name + '</strong>'
+      + '<span>' + item.price.toLocaleString('hu-HU') + ' Ft</span>'
+      + '</div>'
+      + '<button onclick="removeFromCart(' + item.id + ')" style="background:none;border:none;color:#fca5a5;cursor:pointer;font-size:1rem;">✕</button>'
+      + '</div>';
+  }).join('');
+
+  cartTotal.textContent = total.toLocaleString('hu-HU') + ' Ft';
+  cartFab.textContent = '🛒 Kosár (' + cart.length + ')';
+  checkoutBtn.disabled = false;
+}
+
+function toggleCart() {
+  var panel = document.getElementById('cartPanel');
+  panel.classList.toggle('open');
+}
+
+function addToCart(product) {
+  var exists = cart.some(function(item){ return item.id === product.id; });
+  if (!exists) {
+    cart.push({ id: product.id, name: product.name, price: product.price, img: product.img });
+  }
+  localStorage.setItem('bikexCart', JSON.stringify(cart));
+  renderCart();
+  toggleCart();
+}
+
+function buyProduct(id, event) {
+  event.stopPropagation();
+  var product = products.find(function(x){ return x.id===id; });
+  addToCart(product);
+}
+
+function showProductDetails(id, event) {
+  event.stopPropagation();
+  openModal(id);
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(function(item){ return item.id !== id; });
+  localStorage.setItem('bikexCart', JSON.stringify(cart));
+  renderCart();
+}
+
+function goToCheckout() {
+  if (!cart.length) return;
+  window.location.href = 'checkout.html';
+}
+
+function logoutMarketplace() {
+  if (!confirm('Biztosan ki szeretnél jelentkezni?')) return;
+  localStorage.removeItem('bikexSession');
+  window.location.href = 'login.html';
+}
+
+function openModal(id) {
+  var p = products.find(function(x){ return x.id===id; });
+  var seller = p.ownerName || p.seller || 'Kovács Péter';
+  var phone = p.phone || '+36 20 123 4567';
+  var email = p.ownerEmail || p.email || 'hello@bikex.hu';
+  var locationText = p.location || 'Budapest, Magyarország';
+  var payment = p.payment || ['Banki átutalás', 'Kártyás fizetés', 'PayPal'];
+
+  currentProductId = id;
+  document.getElementById('modalImg').src = p.img;
+  document.getElementById('modalTitle').textContent = p.name;
+  document.getElementById('modalBadge').innerHTML = condBadge(p.cond)+' <span style="color:#9ca3af;font-size:.82rem;margin-left:.4rem;">'+p.year+'</span>';
+  document.getElementById('modalPrice').textContent = p.price.toLocaleString('hu-HU')+' Ft';
+  document.getElementById('modalDesc').textContent = p.desc;
+  var sellerType = p.ownerType === 'elado' ? 'Eladó / üzlet' : 'Magánszemély';
+  document.getElementById('modalContact').innerHTML = '<strong style="color:#60a5fa;">'+seller+'</strong><br><span style="color:#94a3b8;font-size:.8rem;">'+sellerType+'</span><br>📍 '+locationText+'<br>📞 '+phone+'<br>✉️ '+email;
+  document.getElementById('modalPayment').innerHTML = payment.map(function(item){ return '• '+item+'<br>'; }).join('');
+  document.getElementById('modalTags').innerHTML = p.tags.map(function(t){ return '<span class="badge badge-blue">'+t+'</span>'; }).join('');
+  document.getElementById('modal').classList.add('open');
+}
+
+function startPurchase() {
+  if (currentProductId === null) return;
+  var p = products.find(function(x){ return x.id===currentProductId; });
+  addToCart(p);
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModal(); });
+
+renderCart();
+applySearchFromUrl();
+render();
+var sessionBar = document.getElementById('sessionBar');
+var activeSession = JSON.parse(localStorage.getItem('bikexSession') || 'null');
+if (activeSession && activeSession.email) {
+  sessionBar.innerHTML = '<span>Bejelentkezve: <strong>' + (activeSession.displayName || activeSession.name || activeSession.email) + '</strong></span><a class="manage-link" href="hirdeteseim.html">Hirdetések kezelése</a><button class="session-logout" onclick="logoutMarketplace()">Kijelentkezés</button>';
+} else {
+  sessionBar.innerHTML = '<span>A vásárláshoz és hirdetésfeladáshoz jelentkezz be.</span><a class="manage-link" href="login.html?return=marketplace.html">Bejelentkezés</a>';
+}
+if (new URLSearchParams(window.location.search).get('added') === '1') {
+  document.getElementById('listingSuccess').classList.add('show');
+}
+</script>
+</body>
+</html>

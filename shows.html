@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BikeX – Versenyek</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .site-search { width: min(240px, 100%) !important; height: 38px; padding: 0 .8rem 0 2.2rem !important; border: 1px solid #374151 !important; border-radius: .5rem !important; background: #1f2937 !important; color: white !important; outline: none; font: inherit; font-size: .85rem; }
+    .site-search:focus { border-color: #60a5fa !important; box-shadow: 0 0 0 3px rgba(96,165,250,.12); }
+    .site-search::placeholder { color: #6b7280; }
+    body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: white; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    .nav { background: #111827; border-bottom: 1px solid #1f2937; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .nav-links { display: flex; gap: 1.25rem; align-items: center; }
+    .nav-link { color: #d1d5db; font-size: .9rem; transition: color .2s; }
+    .nav-link:hover, .nav-link.active { color: white; }
+    .btn-outline { border: 1px solid #374151; color: #d1d5db; background: transparent; padding: .4rem .9rem; border-radius: .5rem; font-size: .85rem; cursor: pointer; display: inline-block; }
+    .btn-primary { background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; border: none; padding: .55rem 1.2rem; border-radius: .5rem; font-size: .88rem; font-weight: 600; cursor: pointer; display: inline-block; }
+    .card { background: #1f2937; border: 1px solid #374151; border-radius: .75rem; overflow: hidden; cursor: pointer; transition: border-color .2s, transform .2s; }
+    .card:hover { border-color: #3b82f6; transform: translateY(-2px); }
+    .event-img { width: 100%; height: 160px; object-fit: cover; position: relative; }
+    .badge { display: inline-block; padding: .15rem .55rem; border-radius: 9999px; font-size: .72rem; font-weight: 600; }
+    .badge-green { background: rgba(34,197,94,.2); color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+    .badge-blue { background: rgba(59,130,246,.2); color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+    .badge-yellow { background: rgba(234,179,8,.2); color: #facc15; border: 1px solid rgba(234,179,8,.3); }
+    .badge-red { background: rgba(239,68,68,.2); color: #f87171; border: 1px solid rgba(239,68,68,.3); }
+    .filter-btn { padding: .4rem .9rem; border-radius: 9999px; border: 1px solid #374151; background: #111827; color: #9ca3af; font-size: .85rem; cursor: pointer; transition: all .2s; }
+    .filter-btn.active { background: rgba(59,130,246,.2); border-color: #3b82f6; color: #60a5fa; }
+    .countdown { display: flex; gap: .5rem; margin-top: .5rem; }
+    .count-box { background: #111827; border-radius: .4rem; padding: .25rem .5rem; text-align: center; min-width: 40px; }
+    .count-num { font-size: 1rem; font-weight: 800; color: #60a5fa; }
+    .count-label { font-size: .6rem; color: #6b7280; }
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-bg.open { display: flex; }
+    .modal { background: #1f2937; border: 1px solid #374151; border-radius: 1rem; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; }
+    .modal-img { width: 100%; height: 220px; object-fit: cover; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="logo">🚲 BikeX</a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Főoldal</a>
+    <form action="marketplace.html" method="get" style="display:flex;align-items:center;position:relative;margin-right:.5rem;">
+      <span style="position:absolute;left:.8rem;color:#6b7280;">🔍</span>
+      <input name="q" type="search" class="search-input site-search" placeholder="Keresés..." />
+    </form>
+    <a href="marketplace.html" class="nav-link">Piactér</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="shows.html" class="nav-link active">Versenyek</a>
+    <a href="parks.html" class="nav-link">Parkok</a>
+    <a href="travel.html" class="nav-link">Utazás</a>
+    <a href="profile.html" class="nav-link">Profil</a>
+    <a href="login.html" onclick="if(confirm('Kijelentkezés?')) { localStorage.removeItem('bikexSession'); return true; } return false;" class="btn-outline">Kilépés</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div style="background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(139,92,246,.12));border-bottom:1px solid #1f2937;padding:2rem;text-align:center;">
+  <h1 style="font-size:2rem;font-weight:800;margin-bottom:.4rem;">🏁 Kerékpáros Versenyek</h1>
+  <p style="color:#9ca3af;">Közelgő és jövőbeli versenyesemények Magyarországon</p>
+  <div style="display:flex;justify-content:center;gap:2rem;margin-top:1.25rem;flex-wrap:wrap;">
+    <div style="text-align:center;"><div style="font-size:1.4rem;font-weight:800;color:#60a5fa;">48</div><div style="color:#9ca3af;font-size:.8rem;">Idei verseny</div></div>
+    <div style="text-align:center;"><div style="font-size:1.4rem;font-weight:800;color:#a78bfa;">12 400</div><div style="color:#9ca3af;font-size:.8rem;">Regisztrált versenyző</div></div>
+    <div style="text-align:center;"><div style="font-size:1.4rem;font-weight:800;color:#34d399;">23</div><div style="color:#9ca3af;font-size:.8rem;">Aktív sorozat</div></div>
+  </div>
+</div>
+
+<div style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem;">
+
+  <!-- SZŰRŐK -->
+  <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem;flex-wrap:wrap;">
+    <button class="filter-btn active" onclick="setFilter('all',this)">Összes</button>
+    <button class="filter-btn" onclick="setFilter('mtb',this)">MTB</button>
+    <button class="filter-btn" onclick="setFilter('road',this)">Országúti</button>
+    <button class="filter-btn" onclick="setFilter('enduro',this)">Enduro</button>
+    <button class="filter-btn" onclick="setFilter('bmx',this)">BMX</button>
+    <button class="filter-btn" onclick="setFilter('gravel',this)">Gravel</button>
+  </div>
+
+  <!-- ESEMÉNY RÁCS -->
+  <div id="eventGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem;"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <img id="mImg" class="modal-img" src="" alt="" />
+    <div style="padding:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:.75rem;">
+        <div>
+          <h2 id="mTitle" style="font-size:1.2rem;font-weight:800;"></h2>
+          <div id="mBadge" style="margin-top:.35rem;"></div>
+        </div>
+        <button onclick="closeModal()" style="background:none;border:none;color:#9ca3af;font-size:1.4rem;cursor:pointer;">✕</button>
+      </div>
+      <div id="mMeta" style="color:#9ca3af;font-size:.88rem;margin-bottom:.75rem;"></div>
+      <div id="mDesc" style="color:#d1d5db;font-size:.9rem;line-height:1.6;margin-bottom:1.25rem;"></div>
+      <div id="mDetails" style="background:#111827;border-radius:.5rem;padding:1rem;margin-bottom:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:.6rem;font-size:.85rem;"></div>
+      <button class="btn-primary" onclick="alert('Sikeres jelentkezés! Hamarosan emailben értesítünk.')">✅ Jelentkezés</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var events = [
+  {id:1,name:'Budapest MTB Maraton 2026',cat:'mtb',date:'2026-09-14',loc:'Budapest, Normafa',img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=200&fit=crop',desc:'Évi legnagyobb magyarországi MTB maratoni verseny. 40 km-es főtáv, 20 km-es junior táv. Budai-hegyek festői útvonalán.',status:'nyitott',dij:'5 800 Ft',resztvevo:'480/600',szint:'1 400 m',kat:'Profi / Amatőr / Junior'},
+  {id:2,name:'Bükk Enduro Cup 2026',cat:'enduro',date:'2026-09-28',loc:'Miskolc, Bükk-hg.',img:'https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=500&h=200&fit=crop',desc:'5 speciális szakaszból álló enduro verseny. Nehéz terepviszonyok, technikai szakaszok.',status:'nyitott',dij:'7 200 Ft',resztvevo:'220/300',szint:'2 800 m',kat:'Expert / Master'},
+  {id:3,name:'Velencei Road Race',cat:'road',date:'2026-10-05',loc:'Velence, Fejér m.',img:'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=500&h=200&fit=crop',desc:'Tó körüli aszfaltos verseny kezdőknek és haladóknak. Szép panoráma, lapos terep.',status:'nyitott',dij:'3 500 Ft',resztvevo:'310/500',szint:'280 m',kat:'Összes kategória'},
+  {id:4,name:'Pilis Gravel Challenge',cat:'gravel',date:'2026-10-12',loc:'Esztergom, Pilis',img:'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=500&h=200&fit=crop',desc:'Mixed-terrain gravel verseny. Aszfalt és kavicsos ösvények váltakozása. 70 km-es táv.',status:'hamarosan',dij:'6 400 Ft',resztvevo:'0/250',szint:'1 680 m',kat:'Open'},
+  {id:5,name:'BMX Freestyle Nationals',cat:'bmx',date:'2026-10-18',loc:'Budapest, Millenáris',img:'https://images.unsplash.com/photo-1505705694340-019e1e335916?w=500&h=200&fit=crop',desc:'Magyarország legnagyobb freestyle BMX versenye. Park és street kategóriák, erős mezőny.',status:'nyitott',dij:'4 000 Ft',resztvevo:'85/120',szint:'—',kat:'Pro / Amateur / Junior'},
+  {id:6,name:'Mátra Trail Series #3',cat:'mtb',date:'2026-10-25',loc:'Gyöngyös, Mátra',img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=200&fit=crop',desc:'Mátra trail sorozat 3. fordulója. Erdei single-track pályákon, 25 km-es táv.',status:'nyitott',dij:'4 800 Ft',resztvevo:'190/280',szint:'900 m',kat:'Expert / Sport / Fun'},
+  {id:7,name:'Debrecen Gran Fondo',cat:'road',date:'2026-11-02',loc:'Debrecen, Alföld',img:'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=500&h=200&fit=crop',desc:'120 km-es hosszú távú aszfaltos verseny. Sík alföldi terep, szeles viszonyok.',status:'hamarosan',dij:'5 200 Ft',resztvevo:'0/400',szint:'320 m',kat:'Gran Fondo / Medio Fondo'},
+  {id:8,name:'Pécs DH Cup',cat:'enduro',date:'2026-11-08',loc:'Pécs, Mecsek',img:'https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=500&h=200&fit=crop',desc:'Downhill és enduro kupa a Mecsekben. Nehéz lejtős szakaszok, teljes biztonsági felszerelés kötelező.',status:'nyitott',dij:'6 000 Ft',resztvevo:'68/100',szint:'1 200 m',kat:'Elite / Sport'},
+  {id:9,name:'Sopron Forest Race',cat:'mtb',date:'2026-11-15',loc:'Sopron, Lővér-hg.',img:'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=500&h=200&fit=crop',desc:'Erdei MTB verseny a Lővér-hegyekben. Autumn edition, sáros pályák várhatók.',status:'hamarosan',dij:'4 500 Ft',resztvevo:'0/200',szint:'760 m',kat:'Open'},
+  {id:10,name:'Budapest Cyclocross',cat:'gravel',date:'2026-11-22',loc:'Budapest, Városliget',img:'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=500&h=200&fit=crop',desc:'Városi cyclocross verseny. Akadályok, sáros szakaszok, rövid körök. Látványos verseny.',status:'nyitott',dij:'3 800 Ft',resztvevo:'142/200',szint:'180 m',kat:'Elite / Amatőr'},
+  {id:11,name:'Győr Road Classic',cat:'road',date:'2026-12-06',loc:'Győr, Kisalföld',img:'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=500&h=200&fit=crop',desc:'Téli szezon nyitó aszfaltos verseny. Lapos terep, gyors mezőny, szórófény megengedett.',status:'hamarosan',dij:'4 200 Ft',resztvevo:'0/350',szint:'240 m',kat:'All categories'},
+  {id:12,name:'BMX Race Series #4',cat:'bmx',date:'2026-12-14',loc:'Székesfehérvár',img:'https://images.unsplash.com/photo-1505705694340-019e1e335916?w=500&h=200&fit=crop',desc:'BMX race sorozat zárója. Fedett pályán zajlik, téli körülmények között is remek verseny.',status:'hamarosan',dij:'3 200 Ft',resztvevo:'0/80',szint:'—',kat:'Elite / Junior / Cruiser'}
+];
+
+var currentFilter = 'all';
+
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  render();
+}
+
+function daysUntil(dateStr) {
+  var d = new Date(dateStr) - new Date();
+  return Math.max(0, Math.ceil(d / 86400000));
+}
+
+function statusBadge(s) {
+  if (s==='nyitott') return '<span class="badge badge-green">Jelentkezés nyitva</span>';
+  if (s==='hamarosan') return '<span class="badge badge-yellow">Hamarosan nyílik</span>';
+  return '<span class="badge badge-red">Lezárva</span>';
+}
+
+function countdownHtml(dateStr) {
+  var days = daysUntil(dateStr);
+  var d = Math.floor(days);
+  var h = Math.floor((daysUntil(dateStr) - d) * 24);
+  return '<div class="countdown">'
+    +'<div class="count-box"><div class="count-num">'+d+'</div><div class="count-label">nap</div></div>'
+    +'<div class="count-box"><div class="count-num">'+h+'</div><div class="count-label">óra</div></div>'
+    +'</div>';
+}
+
+function render() {
+  var list = events.filter(function(e){ return currentFilter==='all' || e.cat===currentFilter; });
+  document.getElementById('eventGrid').innerHTML = list.map(function(e){
+    return '<div class="card" onclick="openModal('+e.id+')">'
+      +'<div style="position:relative;">'
+      +'<img class="event-img" src="'+e.img+'" alt="'+e.name+'" />'
+      +'<div style="position:absolute;top:.6rem;right:.6rem;">'+statusBadge(e.status)+'</div>'
+      +'</div>'
+      +'<div style="padding:1rem;">'
+      +'<div style="font-weight:700;font-size:.95rem;margin-bottom:.3rem;">'+e.name+'</div>'
+      +'<div style="color:#9ca3af;font-size:.8rem;margin-bottom:.3rem;">📍 '+e.loc+' &nbsp;·&nbsp; 📅 '+e.date+'</div>'
+      +'<div style="color:#9ca3af;font-size:.78rem;margin-bottom:.5rem;">Visszaszámlálás:</div>'
+      +countdownHtml(e.date)
+      +'</div></div>';
+  }).join('');
+}
+
+function openModal(id) {
+  var e = events.find(function(x){ return x.id===id; });
+  document.getElementById('mImg').src = e.img;
+  document.getElementById('mTitle').textContent = e.name;
+  document.getElementById('mBadge').innerHTML = statusBadge(e.status);
+  document.getElementById('mMeta').innerHTML = '📍 '+e.loc+' &nbsp;·&nbsp; 📅 '+e.date;
+  document.getElementById('mDesc').textContent = e.desc;
+  document.getElementById('mDetails').innerHTML =
+    '<div><div style="color:#9ca3af;">Nevezési díj</div><div style="font-weight:600;">'+e.dij+'</div></div>'
+    +'<div><div style="color:#9ca3af;">Résztvevők</div><div style="font-weight:600;">'+e.resztvevo+'</div></div>'
+    +'<div><div style="color:#9ca3af;">Szintemelkedés</div><div style="font-weight:600;">'+e.szint+'</div></div>'
+    +'<div><div style="color:#9ca3af;">Kategóriák</div><div style="font-weight:600;">'+e.kat+'</div></div>';
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModal(); });
+render();
+</script>
+</body>
+</html>

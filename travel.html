@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BikeX – Utazás</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .site-search { width: min(240px, 100%) !important; height: 38px; padding: 0 .8rem 0 2.2rem !important; border: 1px solid #374151 !important; border-radius: .5rem !important; background: #1f2937 !important; color: white !important; outline: none; font: inherit; font-size: .85rem; }
+    .site-search:focus { border-color: #60a5fa !important; box-shadow: 0 0 0 3px rgba(96,165,250,.12); }
+    .site-search::placeholder { color: #6b7280; }
+    body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: white; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    .nav { background: #111827; border-bottom: 1px solid #1f2937; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .nav-links { display: flex; gap: 1.25rem; align-items: center; }
+    .nav-link { color: #d1d5db; font-size: .9rem; transition: color .2s; }
+    .nav-link:hover, .nav-link.active { color: white; }
+    .btn-outline { border: 1px solid #374151; color: #d1d5db; background: transparent; padding: .4rem .9rem; border-radius: .5rem; font-size: .85rem; cursor: pointer; display: inline-block; }
+    .btn-primary { background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; border: none; padding: .7rem 1.6rem; border-radius: .6rem; font-weight: 700; font-size: 1rem; cursor: pointer; transition: opacity .2s; }
+    .btn-primary:hover { opacity: .9; }
+    .btn-primary-sm { background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; border: none; padding: .5rem 1.1rem; border-radius: .5rem; font-weight: 600; font-size: .88rem; cursor: pointer; }
+    .btn-gray { background: #374151; color: #d1d5db; border: none; padding: .7rem 1.6rem; border-radius: .6rem; font-weight: 600; font-size: 1rem; cursor: pointer; }
+    .btn-gray:hover { background: #4b5563; }
+    .card { background: #1f2937; border: 1px solid #374151; border-radius: .75rem; }
+    .dest-card { background: #1f2937; border: 1px solid #374151; border-radius: .75rem; overflow: hidden; cursor: pointer; transition: border-color .2s, transform .2s; }
+    .dest-card:hover { border-color: #3b82f6; transform: translateY(-2px); }
+    .dest-img { width: 100%; height: 160px; object-fit: cover; }
+    .badge { display: inline-block; padding: .15rem .55rem; border-radius: 9999px; font-size: .72rem; font-weight: 600; }
+    .badge-green { background: rgba(34,197,94,.2); color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+    .badge-blue { background: rgba(59,130,246,.2); color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+    .badge-yellow { background: rgba(234,179,8,.2); color: #facc15; border: 1px solid rgba(234,179,8,.3); }
+    .badge-purple { background: rgba(139,92,246,.2); color: #a78bfa; border: 1px solid rgba(139,92,246,.3); }
+    .step-num { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#3b82f6,#8b5cf6); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .95rem; flex-shrink: 0; }
+    .step-line { width: 2px; background: #374151; flex: 1; min-height: 24px; margin: .25rem 0 .25rem 17px; }
+    .form-label { display: block; font-size: .85rem; color: #9ca3af; margin-bottom: .4rem; }
+    .form-input { width: 100%; background: #111827; border: 1px solid #374151; border-radius: .5rem; padding: .65rem .9rem; color: white; font-size: .92rem; outline: none; transition: border-color .2s; }
+    .form-input:focus { border-color: #3b82f6; }
+    .form-input::placeholder { color: #4b5563; }
+    .section { display: none; }
+    .section.active { display: block; }
+    .progress-bar-wrap { background: #374151; border-radius: 9999px; height: 6px; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg,#3b82f6,#8b5cf6); height: 100%; border-radius: 9999px; transition: width .4s; }
+    .transport-btn { border: 2px solid #374151; border-radius: .6rem; background: #111827; color: #9ca3af; font-size: .9rem; font-weight: 600; cursor: pointer; padding: .75rem 1rem; text-align: center; transition: all .2s; flex: 1; min-width: 80px; }
+    .transport-btn.active { border-color: #3b82f6; color: white; background: rgba(59,130,246,.15); }
+    .accom-card { border: 2px solid #374151; border-radius: .6rem; background: #111827; cursor: pointer; padding: 1rem; transition: all .2s; }
+    .accom-card.active { border-color: #3b82f6; background: rgba(59,130,246,.1); }
+    .check-item { display: flex; align-items: center; gap: .65rem; padding: .55rem 0; border-bottom: 1px solid rgba(55,65,81,.5); cursor: pointer; }
+    .check-item:last-child { border-bottom: none; }
+    .checkbox { width: 18px; height: 18px; border-radius: 4px; border: 2px solid #374151; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: all .2s; }
+    .checkbox.checked { background: #3b82f6; border-color: #3b82f6; }
+    .result-section { display: none; }
+    .result-section.active { display: block; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="logo">🚲 BikeX</a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Főoldal</a>
+    <form action="marketplace.html" method="get" style="display:flex;align-items:center;position:relative;margin-right:.5rem;">
+      <span style="position:absolute;left:.8rem;color:#6b7280;">🔍</span>
+      <input name="q" type="search" class="search-input site-search" placeholder="Keresés..." />
+    </form>
+    <a href="marketplace.html" class="nav-link">Piactér</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="shows.html" class="nav-link">Versenyek</a>
+    <a href="parks.html" class="nav-link">Parkok</a>
+    <a href="travel.html" class="nav-link active">Utazás</a>
+    <a href="profile.html" class="nav-link">Profil</a>
+    <a href="login.html" onclick="if(confirm('Kijelentkezés?')) { localStorage.removeItem('bikexSession'); return true; } return false;" class="btn-outline">Kilépés</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div style="background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(139,92,246,.12));border-bottom:1px solid #1f2937;padding:2rem;text-align:center;">
+  <h1 style="font-size:2rem;font-weight:800;margin-bottom:.4rem;">✈️ Kerékpáros Utazástervező</h1>
+  <p style="color:#9ca3af;">Tervezd meg a tökéletes bike trip-edet lépésről lépésre</p>
+</div>
+
+<div style="max-width:1100px;margin:0 auto;padding:2rem 1.5rem;">
+
+  <!-- HALADÁS -->
+  <div style="margin-bottom:2rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">
+      <span style="font-size:.85rem;color:#9ca3af;" id="stepLabel">1. lépés: Úti cél</span>
+      <span style="font-size:.85rem;color:#60a5fa;" id="stepCount">1 / 3</span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:33%;"></div></div>
+  </div>
+
+  <!-- LÉPÉS 1: Úti cél -->
+  <div class="section active" id="sec1">
+    <h2 style="font-size:1.25rem;font-weight:800;margin-bottom:.4rem;">🗺️ Hova szeretnél menni?</h2>
+    <p style="color:#9ca3af;font-size:.9rem;margin-bottom:1.5rem;">Válassz egy ajánlott úti célt, vagy add meg a sajátodat</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:1.75rem;">
+      <div class="dest-card" onclick="selectDest(this,'Mátra, Gyöngyös')">
+        <img class="dest-img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=160&fit=crop" alt="Mátra" />
+        <div style="padding:.9rem;">
+          <div style="font-weight:700;margin-bottom:.25rem;">🏔️ Mátra, Gyöngyös</div>
+          <div style="color:#9ca3af;font-size:.8rem;margin-bottom:.4rem;">MTB & Enduro paradise</div>
+          <div style="display:flex;gap:.3rem;"><span class="badge badge-green">MTB</span><span class="badge badge-yellow">3 nap ideális</span></div>
+        </div>
+      </div>
+      <div class="dest-card" onclick="selectDest(this,'Bükk, Miskolc')">
+        <img class="dest-img" src="https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=400&h=160&fit=crop" alt="Bükk" />
+        <div style="padding:.9rem;">
+          <div style="font-weight:700;margin-bottom:.25rem;">🌲 Bükk, Miskolc</div>
+          <div style="color:#9ca3af;font-size:.8rem;margin-bottom:.4rem;">Technikai trail hálózat</div>
+          <div style="display:flex;gap:.3rem;"><span class="badge badge-blue">Trail</span><span class="badge badge-yellow">2–4 nap</span></div>
+        </div>
+      </div>
+      <div class="dest-card" onclick="selectDest(this,'Pilis, Esztergom')">
+        <img class="dest-img" src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&h=160&fit=crop" alt="Pilis" />
+        <div style="padding:.9rem;">
+          <div style="font-weight:700;margin-bottom:.25rem;">⛰️ Pilis, Esztergom</div>
+          <div style="color:#9ca3af;font-size:.8rem;margin-bottom:.4rem;">Road & Gravel heaven</div>
+          <div style="display:flex;gap:.3rem;"><span class="badge badge-purple">Gravel</span><span class="badge badge-yellow">1–3 nap</span></div>
+        </div>
+      </div>
+      <div class="dest-card" onclick="selectDest(this,'Sopron, Lővér')">
+        <img class="dest-img" src="https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=400&h=160&fit=crop" alt="Sopron" />
+        <div style="padding:.9rem;">
+          <div style="font-weight:700;margin-bottom:.25rem;">🌳 Sopron, Lővér</div>
+          <div style="color:#9ca3af;font-size:.8rem;margin-bottom:.4rem;">Erdei trail hálózat</div>
+          <div style="display:flex;gap:.3rem;"><span class="badge badge-green">MTB</span><span class="badge badge-yellow">2–3 nap</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:1.5rem;margin-bottom:1.5rem;">
+      <h3 style="font-weight:700;margin-bottom:1rem;">📝 Egyéni úti cél megadása</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div>
+          <label class="form-label">Úti cél neve</label>
+          <input type="text" class="form-input" id="destName" placeholder="pl. Eger, Velencei-tó..." />
+        </div>
+        <div>
+          <label class="form-label">Tervezett dátum</label>
+          <input type="date" class="form-input" id="destDate" />
+        </div>
+        <div>
+          <label class="form-label">Napok száma</label>
+          <input type="number" class="form-input" id="destDays" placeholder="3" min="1" max="30" />
+        </div>
+        <div>
+          <label class="form-label">Kerékpár típus</label>
+          <select class="form-input" id="bikeType">
+            <option>MTB</option><option>Road</option><option>Gravel</option><option>BMX</option><option>E-bike</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div id="selectedDestInfo" style="display:none;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);border-radius:.6rem;padding:.9rem 1.1rem;margin-bottom:1.25rem;">
+      ✅ Kiválasztott: <strong id="selectedDestName"></strong>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;">
+      <button class="btn-primary" onclick="goStep(2)">Tovább: Közlekedés →</button>
+    </div>
+  </div>
+
+  <!-- LÉPÉS 2: Közlekedés & Szállás -->
+  <div class="section" id="sec2">
+    <h2 style="font-size:1.25rem;font-weight:800;margin-bottom:.4rem;">🚗 Közlekedés & Szállás</h2>
+    <p style="color:#9ca3af;font-size:.9rem;margin-bottom:1.5rem;">Hogyan jutsz el és hol alszol?</p>
+
+    <div class="card" style="padding:1.5rem;margin-bottom:1.25rem;">
+      <h3 style="font-weight:700;margin-bottom:1rem;">🚗 Közlekedési mód</h3>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <div class="transport-btn" onclick="selectTransport(this,'🚗 Autó')">🚗<br/>Autó</div>
+        <div class="transport-btn" onclick="selectTransport(this,'🚌 Busz')">🚌<br/>Busz</div>
+        <div class="transport-btn" onclick="selectTransport(this,'🚂 Vonat')">🚂<br/>Vonat</div>
+        <div class="transport-btn" onclick="selectTransport(this,'✈️ Repülő')">✈️<br/>Repülő</div>
+        <div class="transport-btn" onclick="selectTransport(this,'🚲 Kerékpárral')">🚲<br/>Kerékpárral</div>
+      </div>
+      <div id="transportTip" style="display:none;margin-top:1rem;background:#111827;border-radius:.5rem;padding:.85rem;font-size:.88rem;color:#d1d5db;"></div>
+    </div>
+
+    <div class="card" style="padding:1.5rem;margin-bottom:1.25rem;">
+      <h3 style="font-weight:700;margin-bottom:1rem;">🏨 Szállás típusa</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.75rem;">
+        <div class="accom-card" onclick="selectAccom(this,'🏕️ Camping')">
+          <div style="font-size:1.75rem;margin-bottom:.4rem;">🏕️</div>
+          <div style="font-weight:600;font-size:.9rem;">Camping</div>
+          <div style="color:#9ca3af;font-size:.78rem;margin-top:.25rem;">~3 000 Ft/éj</div>
+        </div>
+        <div class="accom-card" onclick="selectAccom(this,'🏠 Vendégház')">
+          <div style="font-size:1.75rem;margin-bottom:.4rem;">🏠</div>
+          <div style="font-weight:600;font-size:.9rem;">Vendégház</div>
+          <div style="color:#9ca3af;font-size:.78rem;margin-top:.25rem;">~12 000 Ft/éj</div>
+        </div>
+        <div class="accom-card" onclick="selectAccom(this,'🏨 Hotel')">
+          <div style="font-size:1.75rem;margin-bottom:.4rem;">🏨</div>
+          <div style="font-weight:600;font-size:.9rem;">Hotel</div>
+          <div style="color:#9ca3af;font-size:.78rem;margin-top:.25rem;">~25 000 Ft/éj</div>
+        </div>
+        <div class="accom-card" onclick="selectAccom(this,'🛖 Biker Hostel')">
+          <div style="font-size:1.75rem;margin-bottom:.4rem;">🛖</div>
+          <div style="font-weight:600;font-size:.9rem;">Biker Hostel</div>
+          <div style="color:#9ca3af;font-size:.78rem;margin-top:.25rem;">~6 500 Ft/éj</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;">
+      <button class="btn-gray" onclick="goStep(1)">← Vissza</button>
+      <button class="btn-primary" onclick="goStep(3)">Tovább: Csomaglista →</button>
+    </div>
+  </div>
+
+  <!-- LÉPÉS 3: Csomaglista -->
+  <div class="section" id="sec3">
+    <h2 style="font-size:1.25rem;font-weight:800;margin-bottom:.4rem;">🎒 Csomaglista</h2>
+    <p style="color:#9ca3af;font-size:.9rem;margin-bottom:1.5rem;">Jelöld be, mit pakkoltál be</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
+      <div class="card" style="padding:1.25rem;">
+        <h3 style="font-weight:700;font-size:.95rem;margin-bottom:.75rem;">🚲 Kerékpár & Felszerelés</h3>
+        <div id="listBike"></div>
+      </div>
+      <div class="card" style="padding:1.25rem;">
+        <h3 style="font-weight:700;font-size:.95rem;margin-bottom:.75rem;">🧰 Szerszámok & Javítás</h3>
+        <div id="listTools"></div>
+      </div>
+      <div class="card" style="padding:1.25rem;">
+        <h3 style="font-weight:700;font-size:.95rem;margin-bottom:.75rem;">👕 Ruházat</h3>
+        <div id="listClothes"></div>
+      </div>
+      <div class="card" style="padding:1.25rem;">
+        <h3 style="font-weight:700;font-size:.95rem;margin-bottom:.75rem;">🍎 Élelem & Egyéb</h3>
+        <div id="listFood"></div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+      <div style="color:#9ca3af;font-size:.9rem;">Kész tételek: <span id="checkedCount" style="color:#4ade80;font-weight:700;">0</span> / <span id="totalCount" style="font-weight:700;">0</span></div>
+      <div class="progress-bar-wrap" style="flex:1;min-width:160px;max-width:300px;"><div class="progress-bar" id="checkProgress" style="width:0%;"></div></div>
+      <span id="checkPct" style="color:#60a5fa;font-weight:700;font-size:.9rem;">0%</span>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;">
+      <button class="btn-gray" onclick="goStep(2)">← Vissza</button>
+      <button class="btn-primary" onclick="finishPlan()">✅ Terv elkészítve!</button>
+    </div>
+  </div>
+
+  <!-- EREDMÉNY -->
+  <div class="result-section" id="resultSection">
+    <div style="text-align:center;padding:2.5rem 0;">
+      <div style="font-size:4rem;margin-bottom:1rem;">🎉</div>
+      <h2 style="font-size:1.75rem;font-weight:800;margin-bottom:.5rem;">Utazásod megtervezve!</h2>
+      <p style="color:#9ca3af;margin-bottom:2rem;">Összefoglaltuk a trip részleteit</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
+      <div class="card" style="padding:1.25rem;">
+        <h3 style="font-weight:700;font-size:.95rem;margin-bottom:.75rem;">📍 Trip részletei</h3>
+        <div id="summaryDest" style="color:#d1d5db;font-size:.9rem;line-height:2;"></div>
+      </div>
+      <div class="card" style="padding:1.25rem;">
+        <h3 style="font-weight:700;font-size:.95rem;margin-bottom:.75rem;">💰 Becsült költség</h3>
+        <div id="summaryCost" style="font-size:.9rem;line-height:2;"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-primary" onclick="alert('Terv mentve a profilodba!')">💾 Mentés</button>
+      <button class="btn-primary-sm" onclick="alert('Megosztási link másolva!')" style="background:#374151;">🔗 Megosztás</button>
+      <button class="btn-gray" onclick="resetPlanner()">🔄 Új tervezés</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var currentStep = 1;
+var selectedDest = '';
+var selectedTransport = '';
+var selectedAccom = '';
+var accomCosts = {'🏕️ Camping':3000,'🏠 Vendégház':12000,'🏨 Hotel':25000,'🛖 Biker Hostel':6500};
+
+var checklistData = {
+  listBike: ['Kerékpár','Sisak (kötelező!)','Szemüveg','Kesztyű','Kerékpáros cipő','Vízálló táska / bikepacking'],
+  listTools: ['Defektjavító szett','Pumpáló','Többfunkciós szerszám','Tartalék tömlő','Láncolaj','Kerékpárbiztosíték'],
+  listClothes: ['Kerékpáros nadrág (3 napos túra: 2 db)','Kerékpáros mez (3 db)','Esőkabát','Meleg réteg','Váltó ruha','Szandál / papucs szállásra'],
+  listFood: ['Energiaszelet / gél','Vizes palack (2 db)','Elektrolit italpor','Összehordható uzsonna','Napvédő','Elsősegély csomag']
+};
+
+var checkState = {};
+var totalItems = 0;
+
+function initChecklist() {
+  totalItems = 0;
+  Object.keys(checklistData).forEach(function(key) {
+    var items = checklistData[key];
+    var html = items.map(function(item, i) {
+      var id = key + '_' + i;
+      checkState[id] = false;
+      totalItems++;
+      return '<div class="check-item" onclick="toggleCheck(\''+id+'\',this)">'
+        +'<div class="checkbox" id="cb_'+id+'"></div>'
+        +'<span style="font-size:.88rem;color:#d1d5db;">'+item+'</span>'
+        +'</div>';
+    }).join('');
+    document.getElementById(key).innerHTML = html;
+  });
+  document.getElementById('totalCount').textContent = totalItems;
+  updateCheckProgress();
+}
+
+function toggleCheck(id, row) {
+  checkState[id] = !checkState[id];
+  var cb = document.getElementById('cb_' + id);
+  if (checkState[id]) {
+    cb.classList.add('checked');
+    cb.innerHTML = '<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L4 7L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>';
+  } else {
+    cb.classList.remove('checked');
+    cb.innerHTML = '';
+  }
+  updateCheckProgress();
+}
+
+function updateCheckProgress() {
+  var checked = Object.values(checkState).filter(function(v){ return v; }).length;
+  document.getElementById('checkedCount').textContent = checked;
+  var pct = totalItems ? Math.round(checked / totalItems * 100) : 0;
+  document.getElementById('checkProgress').style.width = pct + '%';
+  document.getElementById('checkPct').textContent = pct + '%';
+}
+
+function selectDest(el, name) {
+  document.querySelectorAll('.dest-card').forEach(function(c){ c.style.borderColor = '#374151'; });
+  el.style.borderColor = '#3b82f6';
+  selectedDest = name;
+  document.getElementById('selectedDestName').textContent = name;
+  document.getElementById('selectedDestInfo').style.display = 'block';
+}
+
+function selectTransport(el, mode) {
+  document.querySelectorAll('.transport-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  selectedTransport = mode;
+  var tips = {
+    '🚗 Autó': '🚗 Autóval: Kerékpártartót ajánlott felszerelni. Ellenőrizd a rögzítést indulás előtt!',
+    '🚌 Busz': '🚌 Busszal: Előre foglalj kerékpártárolót (Volánbusz: +500 Ft/kerékpár). Szétszerelés szükséges lehet.',
+    '🚂 Vonattal': '🚂 Vonattal: MÁV kerékpáros kocsik elérhetők. Kerékpárjegy: 400 Ft/nap belföldön.',
+    '✈️ Repülő': '✈️ Repülővel: A kerékpárt szét kell szerelni és csomagolni. +25-60€ kerékpár díj légitársaságonként.',
+    '🚲 Kerékpárral': '🚲 Kerékpárral: A legjobb mód! Ellenőrizd az útvonalon a kerékpársávokat és bikepacking lehetőségeket.'
+  };
+  var tip = tips[mode] || '';
+  var tipEl = document.getElementById('transportTip');
+  tipEl.textContent = tip;
+  tipEl.style.display = tip ? 'block' : 'none';
+}
+
+function selectAccom(el, type) {
+  document.querySelectorAll('.accom-card').forEach(function(c){ c.classList.remove('active'); });
+  el.classList.add('active');
+  selectedAccom = type;
+}
+
+function goStep(n) {
+  var destInput = document.getElementById('destName').value.trim();
+  if (n > 1 && !selectedDest && !destInput) {
+    alert('Kérjük válassz úti célt vagy add meg a saját helyszínedet!');
+    return;
+  }
+  if (!selectedDest && destInput) selectedDest = destInput;
+
+  document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById('sec'+n).classList.add('active');
+  currentStep = n;
+
+  var labels = ['','1. lépés: Úti cél','2. lépés: Közlekedés & Szállás','3. lépés: Csomaglista'];
+  document.getElementById('stepLabel').textContent = labels[n];
+  document.getElementById('stepCount').textContent = n + ' / 3';
+  document.getElementById('progressBar').style.width = (n/3*100) + '%';
+
+  if (n === 3) initChecklist();
+}
+
+function finishPlan() {
+  var days = parseInt(document.getElementById('destDays').value) || 3;
+  var accomCost = accomCosts[selectedAccom] || 12000;
+  var totalAccom = accomCost * days;
+  var totalFood = 4500 * days;
+  var totalTransport = selectedTransport === '✈️ Repülő' ? 35000 : selectedTransport === '🚂 Vonat' ? 4800 : selectedTransport === '🚌 Busz' ? 3200 : 8500;
+  var total = totalAccom + totalFood + totalTransport + 5000;
+
+  document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById('progressBar').style.width = '100%';
+  document.getElementById('stepLabel').textContent = 'Kész! ✅';
+  document.getElementById('stepCount').textContent = '3 / 3';
+
+  document.getElementById('summaryDest').innerHTML =
+    '📍 Úti cél: <strong>'+selectedDest+'</strong><br/>'
+    +'📅 Hossz: <strong>'+days+' nap</strong><br/>'
+    +'🚗 Közlekedés: <strong>'+(selectedTransport||'Nincs megadva')+'</strong><br/>'
+    +'🏨 Szállás: <strong>'+(selectedAccom||'Nincs megadva')+'</strong><br/>'
+    +'🚲 Kerékpár: <strong>'+document.getElementById('bikeType').value+'</strong>';
+
+  document.getElementById('summaryCost').innerHTML =
+    '🏨 Szállás ('+days+' éj): <span style="color:#60a5fa;font-weight:600;">'+totalAccom.toLocaleString('hu-HU')+' Ft</span><br/>'
+    +'🍎 Élelem: <span style="color:#60a5fa;font-weight:600;">'+totalFood.toLocaleString('hu-HU')+' Ft</span><br/>'
+    +'🚗 Közlekedés: <span style="color:#60a5fa;font-weight:600;">'+totalTransport.toLocaleString('hu-HU')+' Ft</span><br/>'
+    +'🔧 Egyéb: <span style="color:#60a5fa;font-weight:600;">5 000 Ft</span><br/>'
+    +'<hr style="border-color:#374151;margin:.5rem 0;"/>'
+    +'💰 Összesen: <span style="color:#4ade80;font-weight:800;font-size:1.1rem;">~'+total.toLocaleString('hu-HU')+' Ft</span>';
+
+  document.getElementById('resultSection').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetPlanner() {
+  selectedDest = ''; selectedTransport = ''; selectedAccom = '';
+  document.getElementById('resultSection').classList.remove('active');
+  document.getElementById('destName').value = '';
+  document.getElementById('destDate').value = '';
+  document.getElementById('destDays').value = '';
+  document.getElementById('selectedDestInfo').style.display = 'none';
+  document.querySelectorAll('.dest-card').forEach(function(c){ c.style.borderColor = '#374151'; });
+  document.querySelectorAll('.transport-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.accom-card').forEach(function(c){ c.classList.remove('active'); });
+  document.getElementById('transportTip').style.display = 'none';
+  goStep(1);
+}
+</script>
+</body>
+</html>

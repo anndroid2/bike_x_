@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BikeX – Analytics</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .site-search { width: min(240px, 100%) !important; height: 38px; padding: 0 .8rem 0 2.2rem !important; border: 1px solid #374151 !important; border-radius: .5rem !important; background: #1f2937 !important; color: white !important; outline: none; font: inherit; font-size: .85rem; }
+    .site-search:focus { border-color: #60a5fa !important; box-shadow: 0 0 0 3px rgba(96,165,250,.12); }
+    .site-search::placeholder { color: #6b7280; }
+    body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: white; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    .nav { background: #111827; border-bottom: 1px solid #1f2937; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .nav-links { display: flex; gap: 1.25rem; align-items: center; }
+    .nav-link { color: #d1d5db; font-size: .9rem; transition: color .2s; }
+    .nav-link:hover, .nav-link.active { color: white; }
+    .btn-outline { border: 1px solid #374151; color: #d1d5db; background: transparent; padding: .4rem .9rem; border-radius: .5rem; font-size: .85rem; cursor: pointer; display: inline-block; }
+    .card { background: #1f2937; border: 1px solid #374151; border-radius: .75rem; padding: 1.5rem; }
+    .stat-num { font-size: 2rem; font-weight: 800; }
+    .stat-label { color: #9ca3af; font-size: .82rem; margin-top: .25rem; }
+    .stat-change { font-size: .8rem; font-weight: 600; margin-top: .3rem; }
+    .up { color: #4ade80; }
+    .down { color: #f87171; }
+    .badge { display: inline-block; padding: .15rem .55rem; border-radius: 9999px; font-size: .72rem; font-weight: 600; }
+    .badge-green { background: rgba(34,197,94,.2); color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+    .badge-blue { background: rgba(59,130,246,.2); color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+    .badge-yellow { background: rgba(234,179,8,.2); color: #facc15; border: 1px solid rgba(234,179,8,.3); }
+    .tab { padding: .55rem 1rem; font-size: .88rem; font-weight: 500; color: #9ca3af; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .2s; }
+    .tab.active { color: #60a5fa; border-bottom-color: #3b82f6; }
+    .ride-row { display: flex; align-items: center; gap: 1rem; padding: .85rem 1.1rem; border-bottom: 1px solid #374151; }
+    .ride-row:last-child { border-bottom: none; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="logo">🚲 BikeX</a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Főoldal</a>
+    <form action="marketplace.html" method="get" style="display:flex;align-items:center;position:relative;margin-right:.5rem;">
+      <span style="position:absolute;left:.8rem;color:#6b7280;">🔍</span>
+      <input name="q" type="search" class="search-input site-search" placeholder="Keresés..." />
+    </form>
+    <a href="marketplace.html" class="nav-link">Piactér</a>
+    <a href="analytics.html" class="nav-link active">Analytics</a>
+    <a href="shows.html" class="nav-link">Versenyek</a>
+    <a href="parks.html" class="nav-link">Parkok</a>
+    <a href="travel.html" class="nav-link">Utazás</a>
+    <a href="profile.html" class="nav-link">Profil</a>
+    <a href="login.html" onclick="if(confirm('Kijelentkezés?')) { localStorage.removeItem('bikexSession'); return true; } return false;" class="btn-outline">Kilépés</a>
+  </div>
+</nav>
+
+<div style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem;">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.75rem;flex-wrap:wrap;gap:1rem;">
+    <div>
+      <h1 style="font-size:1.75rem;font-weight:800;">📊 Analytics</h1>
+      <p style="color:#9ca3af;font-size:.9rem;margin-top:.2rem;">Kerékpáros teljesítmény és statisztikák</p>
+    </div>
+    <select style="background:#1f2937;border:1px solid #374151;border-radius:.5rem;padding:.5rem .9rem;color:white;font-size:.9rem;outline:none;cursor:pointer;">
+      <option>Utolsó 30 nap</option>
+      <option>Utolsó 90 nap</option>
+      <option>Ez az év</option>
+    </select>
+  </div>
+
+  <!-- STAT KÁRTYÁK -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;">
+    <div class="card" style="border-top:3px solid #3b82f6;">
+      <div class="stat-num" style="color:#60a5fa;">342 km</div>
+      <div class="stat-label">Összes megtett km</div>
+      <div class="stat-change up">↑ 18% előző hónaphoz</div>
+    </div>
+    <div class="card" style="border-top:3px solid #8b5cf6;">
+      <div class="stat-num" style="color:#a78bfa;">28 óra</div>
+      <div class="stat-label">Tekerési idő</div>
+      <div class="stat-change up">↑ 12% előző hónaphoz</div>
+    </div>
+    <div class="card" style="border-top:3px solid #10b981;">
+      <div class="stat-num" style="color:#34d399;">5 800 m</div>
+      <div class="stat-label">Szintemelkedés</div>
+      <div class="stat-change up">↑ 24% előző hónaphoz</div>
+    </div>
+    <div class="card" style="border-top:3px solid #f59e0b;">
+      <div class="stat-num" style="color:#fbbf24;">18</div>
+      <div class="stat-label">Kirándulások száma</div>
+      <div class="stat-change down">↓ 3% előző hónaphoz</div>
+    </div>
+    <div class="card" style="border-top:3px solid #ef4444;">
+      <div class="stat-num" style="color:#f87171;">22,4 km/h</div>
+      <div class="stat-label">Átlagsebesség</div>
+      <div class="stat-change up">↑ 5% előző hónaphoz</div>
+    </div>
+    <div class="card" style="border-top:3px solid #06b6d4;">
+      <div class="stat-num" style="color:#22d3ee;">1 240</div>
+      <div class="stat-label">Elégetett kalória</div>
+      <div class="stat-change up">↑ 8% előző hónaphoz</div>
+    </div>
+  </div>
+
+  <!-- GRAFIKON + KIRÁNDULÁSOK -->
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.25rem;margin-bottom:2rem;">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+        <h2 style="font-size:1rem;font-weight:700;">Teljesített km / hét</h2>
+        <div style="display:flex;gap:.4rem;">
+          <button class="tab active" onclick="setChart('km',this)">km</button>
+          <button class="tab" onclick="setChart('ido',this)">Idő</button>
+          <button class="tab" onclick="setChart('szint',this)">Szint</button>
+        </div>
+      </div>
+      <canvas id="mainChart" height="200"></canvas>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:1rem 1.25rem;border-bottom:1px solid #374151;">
+        <h2 style="font-size:1rem;font-weight:700;">Kerékpár megoszlás</h2>
+      </div>
+      <div style="padding:1.25rem;display:flex;justify-content:center;">
+        <canvas id="pieChart" width="180" height="180"></canvas>
+      </div>
+      <div style="padding:.5rem 1.25rem 1.25rem;">
+        <div style="display:flex;flex-direction:column;gap:.4rem;">
+          <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;"><span style="width:10px;height:10px;border-radius:50%;background:#3b82f6;display:inline-block;"></span>MTB — 58%</div>
+          <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;"><span style="width:10px;height:10px;border-radius:50%;background:#8b5cf6;display:inline-block;"></span>Road — 27%</div>
+          <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;"><span style="width:10px;height:10px;border-radius:50%;background:#10b981;display:inline-block;"></span>Gravel — 15%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KIRÁNDULÁS LISTA -->
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div style="padding:1rem 1.25rem;border-bottom:1px solid #374151;display:flex;justify-content:space-between;align-items:center;">
+      <h2 style="font-size:1rem;font-weight:700;">🗺️ Legutóbbi kirándulások</h2>
+      <span style="color:#9ca3af;font-size:.82rem;">Utolsó 30 nap</span>
+    </div>
+    <div>
+      <div class="ride-row"><div style="font-size:1.5rem;">🏔️</div><div style="flex:1;"><div style="font-weight:600;font-size:.9rem;">Budai-hegyek Enduro</div><div style="color:#9ca3af;font-size:.8rem;">2026. aug. 10. · MTB</div></div><div style="text-align:right;"><div style="font-weight:700;color:#60a5fa;">34,2 km</div><div style="color:#9ca3af;font-size:.78rem;">↑ 820 m · 2:14 h</div></div><span class="badge badge-green">Kiváló</span></div>
+      <div class="ride-row"><div style="font-size:1.5rem;">🛣️</div><div style="flex:1;"><div style="font-weight:600;font-size:.9rem;">Velencei-tó kör</div><div style="color:#9ca3af;font-size:.8rem;">2026. aug. 7. · Road</div></div><div style="text-align:right;"><div style="font-weight:700;color:#60a5fa;">62,1 km</div><div style="color:#9ca3af;font-size:.78rem;">↑ 380 m · 2:48 h</div></div><span class="badge badge-blue">Tempó</span></div>
+      <div class="ride-row"><div style="font-size:1.5rem;">🌲</div><div style="flex:1;"><div style="font-weight:600;font-size:.9rem;">Mátra erdei ösvény</div><div style="color:#9ca3af;font-size:.8rem;">2026. aug. 3. · MTB</div></div><div style="text-align:right;"><div style="font-weight:700;color:#60a5fa;">28,7 km</div><div style="color:#9ca3af;font-size:.78rem;">↑ 1240 m · 3:02 h</div></div><span class="badge badge-yellow">Közepes</span></div>
+      <div class="ride-row"><div style="font-size:1.5rem;">🚵</div><div style="flex:1;"><div style="font-weight:600;font-size:.9rem;">Pilis kör gravel</div><div style="color:#9ca3af;font-size:.8rem;">2026. júl. 28. · Gravel</div></div><div style="text-align:right;"><div style="font-weight:700;color:#60a5fa;">48,5 km</div><div style="color:#9ca3af;font-size:.78rem;">↑ 960 m · 2:55 h</div></div><span class="badge badge-green">Kiváló</span></div>
+      <div class="ride-row"><div style="font-size:1.5rem;">🏁</div><div style="flex:1;"><div style="font-weight:600;font-size:.9rem;">Bükk versenyedzés</div><div style="color:#9ca3af;font-size:.8rem;">2026. júl. 24. · MTB</div></div><div style="text-align:right;"><div style="font-weight:700;color:#60a5fa;">19,3 km</div><div style="color:#9ca3af;font-size:.78rem;">↑ 640 m · 1:28 h</div></div><span class="badge badge-blue">Verseny</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var kmData = [42, 28, 55, 38, 64, 47, 68];
+var idoData = [3.2, 2.1, 4.0, 2.8, 4.5, 3.5, 4.8];
+var szintData = [820, 450, 1240, 680, 1560, 920, 1100];
+var labels = ['H','K','Sz','Cs','P','Sz','V'];
+var currentData = kmData;
+var ctx = document.getElementById('mainChart').getContext('2d');
+var mainChart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: labels,
+    datasets: [{
+      label: 'km',
+      data: kmData,
+      backgroundColor: 'rgba(59,130,246,.5)',
+      borderColor: '#3b82f6',
+      borderWidth: 2,
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#9ca3af' } },
+      y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#9ca3af' } }
+    }
+  }
+});
+
+function setChart(type, el) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  var data = type==='km' ? kmData : type==='ido' ? idoData : szintData;
+  mainChart.data.datasets[0].data = data;
+  mainChart.data.datasets[0].label = type;
+  mainChart.update();
+}
+
+var pie = document.getElementById('pieChart').getContext('2d');
+new Chart(pie, {
+  type: 'doughnut',
+  data: {
+    labels: ['MTB','Road','Gravel'],
+    datasets: [{ data:[58,27,15], backgroundColor:['#3b82f6','#8b5cf6','#10b981'], borderWidth: 0 }]
+  },
+  options: { responsive: false, plugins: { legend: { display: false } }, cutout: '65%' }
+});
+</script>
+</body>
+</html>

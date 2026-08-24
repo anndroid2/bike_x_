@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BikeX – Bejelentkezés</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .site-search { width: min(240px, 100%) !important; height: 38px; padding: 0 .8rem 0 2.2rem !important; border: 1px solid #374151 !important; border-radius: .5rem !important; background: #1f2937 !important; color: white !important; outline: none; font: inherit; font-size: .85rem; }
+    .site-search:focus { border-color: #60a5fa !important; box-shadow: 0 0 0 3px rgba(96,165,250,.12); }
+    .site-search::placeholder { color: #6b7280; }
+    body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: white; min-height: 100vh; display: flex; flex-direction: column; }
+    a { text-decoration: none; color: inherit; }
+
+    .bg-pattern { position: fixed; inset: 0; background: radial-gradient(ellipse at 20% 50%, rgba(59,130,246,.12) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(139,92,246,.1) 0%, transparent 50%); pointer-events: none; }
+
+    .nav { background: rgba(17,24,39,.8); backdrop-filter: blur(10px); border-bottom: 1px solid #1f2937; padding: 0 2rem; display: flex; align-items: center; height: 60px; }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-link { color: #d1d5db; font-size: .95rem; transition: color .2s; text-decoration: none; }
+    .nav-link:hover { color: white; }
+    .logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+    .card { background: #1f2937; border: 1px solid #374151; border-radius: 1rem; padding: 2.5rem; width: 100%; max-width: 420px; }
+    .card-title { font-size: 1.6rem; font-weight: 800; margin-bottom: .3rem; }
+    .card-sub { color: #9ca3af; font-size: .9rem; margin-bottom: 2rem; }
+
+    .form-group { margin-bottom: 1.1rem; }
+    .form-label { display: block; font-size: .85rem; color: #9ca3af; margin-bottom: .4rem; }
+    .form-input { width: 100%; background: #111827; border: 1px solid #374151; border-radius: .5rem; padding: .7rem 1rem; color: white; font-size: .95rem; outline: none; transition: border-color .2s; }
+    .form-input:focus { border-color: #3b82f6; }
+    .form-input::placeholder { color: #4b5563; }
+
+    .btn-primary { width: 100%; background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; border: none; padding: .85rem; border-radius: .6rem; font-weight: 700; font-size: 1rem; cursor: pointer; transition: opacity .2s; margin-top: .5rem; }
+    .btn-primary:hover { opacity: .9; }
+
+    .divider { display: flex; align-items: center; gap: .75rem; margin: 1.25rem 0; color: #6b7280; font-size: .85rem; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #374151; }
+
+    .btn-social { width: 100%; background: #111827; border: 1px solid #374151; color: white; padding: .75rem; border-radius: .6rem; font-size: .9rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .6rem; margin-bottom: .65rem; transition: background .2s; }
+    .btn-social:hover { background: #1f2937; }
+
+    .link-blue { color: #60a5fa; font-weight: 600; }
+    .link-blue:hover { text-decoration: underline; }
+    .forgot { display: block; text-align: right; color: #60a5fa; font-size: .82rem; margin-top: .3rem; }
+    .forgot:hover { text-decoration: underline; }
+    .forgot-box { text-align: center; margin-top: 1rem; color: #9ca3af; font-size: .88rem; }
+
+    .error-msg { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: #f87171; border-radius: .5rem; padding: .65rem .9rem; font-size: .85rem; margin-bottom: 1rem; display: none; }
+    .error-msg.show { display: block; }
+    .success-msg { background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.35); color: #4ade80; border-radius: .5rem; padding: .65rem .9rem; font-size: .85rem; margin-bottom: 1rem; display: none; }
+    .success-msg.show { display: block; }
+    .btn-secondary { width: 100%; background: #111827; border: 1px solid #374151; color: #d1d5db; padding: .72rem; border-radius: .6rem; font-size: .9rem; font-weight: 600; cursor: pointer; margin-top: .65rem; display: none; }
+    .btn-secondary.show { display: block; }
+    .btn-secondary:hover { background: #1f2937; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+</head>
+<body>
+<div class="bg-pattern"></div>
+
+<nav class="nav">
+  <div style="display: flex; align-items: center; gap: 2rem; flex: 1;">
+    <a href="index.html" class="logo">🚲 BikeX</a>
+    <div class="nav-links" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <a href="index.html" class="nav-link">Főoldal</a>
+      <form action="marketplace.html" method="get" style="display:flex;align-items:center;position:relative;">
+        <span style="position:absolute;left:.8rem;color:#6b7280;">🔍</span>
+        <input name="q" type="search" class="site-search" placeholder="Keresés..." />
+      </form>
+      <a href="marketplace.html" class="nav-link">Piactér</a>
+      <a href="analytics.html" class="nav-link">Analytics</a>
+      <a href="shows.html" class="nav-link">Versenyek</a>
+      <a href="parks.html" class="nav-link">Parkok</a>
+      <a href="travel.html" class="nav-link">Utazás</a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="card">
+    <h1 class="card-title">Üdvözlünk vissza! 👋</h1>
+    <p class="card-sub">Jelentkezz be a BikeX fiókodba</p>
+
+    <div class="error-msg" id="errorMsg">Hibás email cím vagy jelszó. Próbáld újra.</div>
+    <div class="success-msg" id="successMsg"></div>
+
+    <div class="form-group">
+      <label class="form-label">Email cím</label>
+      <input type="email" class="form-input" id="emailInput" placeholder="pelda@email.hu" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Jelszó</label>
+      <input type="password" class="form-input" id="passInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+    </div>
+ 
+    <button class="btn-primary" onclick="doLogin()">Bejelentkezés</button>
+    <button class="btn-secondary" id="resendBtn" onclick="resendConfirmationEmail()">Megerősítő email újraküldése</button>
+
+    <div class="divider">vagy</div>
+
+    <button class="btn-social" onclick="alert('Google bejelentkezés – hamarosan!')">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+      Folytatás Google-lel
+    </button>
+    <button class="btn-social" onclick="alert('Facebook bejelentkezés – hamarosan!')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      Folytatás Facebook-kal
+    </button>
+
+    <p style="text-align:center;color:#9ca3af;font-size:.88rem;margin-top:1.5rem;">
+      Még nincs fiókod? <a href="register.html" class="link-blue">Regisztrálj!</a>
+    </p>
+    <div class="forgot-box">
+      Elfelejtetted a jelszavad? <a href="forgot-password.html" class="link-blue">Állítsd vissza itt!</a>
+    </div>
+  </div>
+</main>
+
+<script>
+  function mapLoginErrorMessage(message) {
+    var text = (message || '').toLowerCase();
+    if (text.indexOf('email not confirmed') !== -1 || text.indexOf('not confirmed') !== -1) {
+      return 'Az email cím még nincs megerősítve. Nyisd meg a megerősítő levelet, vagy kérj új küldést.';
+    }
+    if (text.indexOf('invalid login credentials') !== -1) {
+      return 'Hibás email cím vagy jelszó.';
+    }
+    return message || 'Sikertelen bejelentkezés. Próbáld újra!';
+  }
+
+  function shouldShowResendButton(message) {
+    var text = (message || '').toLowerCase();
+    return text.indexOf('email not confirmed') !== -1 || text.indexOf('not confirmed') !== -1;
+  }
+
+  function hideMessages() {
+    document.getElementById('errorMsg').classList.remove('show');
+    document.getElementById('successMsg').classList.remove('show');
+  }
+
+  function initLoginPage() {
+    var params = new URLSearchParams(window.location.search);
+    var verified = params.get('verified');
+    var email = params.get('email');
+    if (email) {
+      document.getElementById('emailInput').value = email;
+    }
+    if (verified === '1') {
+      var success = document.getElementById('successMsg');
+      success.textContent = 'Email címed megerősítve. Most már be tudsz jelentkezni.';
+      success.classList.add('show');
+    }
+  }
+
+  async function doLogin() {
+    var email = document.getElementById('emailInput').value.trim();
+    var pass = document.getElementById('passInput').value;
+    var err = document.getElementById('errorMsg');
+    var resendBtn = document.getElementById('resendBtn');
+    if (!email || !pass) {
+      hideMessages();
+      err.textContent = 'Kérjük töltsd ki az összes mezőt!';
+      err.classList.add('show');
+      resendBtn.classList.remove('show');
+      return;
+    }
+    hideMessages();
+    resendBtn.classList.remove('show');
+    var button = document.querySelector('.btn-primary');
+    button.disabled = true;
+    button.textContent = 'Bejelentkezés...';
+    var result = await sb.auth.signInWithPassword({ email: email, password: pass });
+    button.disabled = false;
+    button.textContent = 'Bejelentkezés';
+    if (result.error) {
+      err.textContent = mapLoginErrorMessage(result.error.message);
+      err.classList.add('show');
+      if (shouldShowResendButton(result.error.message)) {
+        resendBtn.classList.add('show');
+      }
+      return;
+    }
+    localStorage.setItem('bikexSession', JSON.stringify(toBikeXSession(result.data.user)));
+    var returnUrl = new URLSearchParams(window.location.search).get('return');
+    window.location.href = returnUrl || 'marketplace.html';
+  }
+
+  async function resendConfirmationEmail() {
+    var email = document.getElementById('emailInput').value.trim();
+    var resendBtn = document.getElementById('resendBtn');
+    var err = document.getElementById('errorMsg');
+    var success = document.getElementById('successMsg');
+    if (!email) {
+      hideMessages();
+      err.textContent = 'Add meg az email címedet az újraküldéshez!';
+      err.classList.add('show');
+      return;
+    }
+    hideMessages();
+    resendBtn.disabled = true;
+    resendBtn.textContent = 'Küldés...';
+    var result = await sb.auth.resend({
+      type: 'signup',
+      email: email,
+      options: { emailRedirectTo: window.bikexPublicUrl + '/email-verified.html' }
+    });
+    resendBtn.disabled = false;
+    resendBtn.textContent = 'Megerősítő email újraküldése';
+    if (result.error) {
+      err.textContent = mapLoginErrorMessage(result.error.message);
+      err.classList.add('show');
+      return;
+    }
+    success.textContent = 'Újra elküldtük a megerősítő emailt. Nézd meg a beérkező leveleidet (és a Spam mappát is).';
+    success.classList.add('show');
+  }
+
+  initLoginPage();
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BikeX - Rólunk</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; background: #0a0e1a; color: #e5e7eb; font-family: 'Inter', sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    .nav { min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0 2rem; background: #111827; border-bottom: 1px solid #1f2937; position: sticky; top: 0; z-index: 10; }
+    .logo { background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.4rem; font-weight: 800; }
+    .nav-links { display: flex; align-items: center; gap: 1.1rem; flex-wrap: wrap; }
+    .nav-link { color: #d1d5db; font-size: .85rem; }
+    .nav-link:hover { color: white; }
+    .nav-button { padding: .45rem .8rem; border: 1px solid #374151; border-radius: .5rem; color: #d1d5db; font-size: .82rem; }
+    .nav-button.primary { border: 0; background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; font-weight: 600; }
+    .page { width: min(900px, calc(100% - 2rem)); margin: 0 auto; padding: 3rem 0 5rem; }
+    .eyebrow { color: #60a5fa; font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: .5rem 0 .9rem; color: white; font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; }
+    .lead { max-width: 680px; color: #cbd5e1; font-size: 1rem; line-height: 1.75; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+    .card { padding: 1.25rem; border: 1px solid #334155; border-radius: .9rem; background: #111827; }
+    .card h2 { margin-bottom: .5rem; color: #f8fafc; font-size: 1rem; }
+    .card p { color: #94a3b8; font-size: .88rem; line-height: 1.65; }
+    footer { border-top: 1px solid #1f2937; background: #111827; padding: 1.5rem; text-align: center; color: #6b7280; font-size: .82rem; }
+    footer a { color: #9ca3af; margin: 0 .5rem; }
+    @media (max-width: 700px) { .nav { padding: .8rem 1rem; align-items: flex-start; flex-direction: column; } .page { padding-top: 2rem; } .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html" class="logo">🚲 BikeX</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Főoldal</a>
+      <a href="marketplace.html" class="nav-link">Piactér</a><a href="analytics.html" class="nav-link">Analytics</a><a href="shows.html" class="nav-link">Versenyek</a><a href="parks.html" class="nav-link">Parkok</a><a href="travel.html" class="nav-link">Utazás</a><a href="login.html" class="nav-button">Bejelentkezés</a><a href="register.html" class="nav-button primary">Regisztráció</a>
+    </div>
+  </nav>
+  <main class="page">
+    <div class="eyebrow">A BikeX története</div>
+    <h1>Kerékpárosoknak épített közösség</h1>
+    <p class="lead">A BikeX célja, hogy egy helyen tegye egyszerűvé a kerékpárok felfedezését, adásvételét, a versenyek megtalálását és a következő túra megtervezését.</p>
+    <div class="grid">
+      <section class="card"><h2>Megbízható piactér</h2><p>Átlátható hirdetések és kényelmes keresés, hogy gyorsabban megtaláld a megfelelő kerékpárt vagy alkatrészt.</p></section>
+      <section class="card"><h2>Aktív közösség</h2><p>Versenyek, parkok és utazási tippek egy közös felületen, minden szintű kerékpáros számára.</p></section>
+      <section class="card"><h2>Folyamatos fejlődés</h2><p>A visszajelzések alapján fejlesztjük a BikeX funkcióit és felhasználói élményét.</p></section>
+    </div>
+  </main>
+  <footer><a href="aszf.html">ÁSZF</a><a href="adatvedelmi-tajekoztato.html">Adatvédelem</a><a href="tamogatas.html">Támogatás</a><div style="margin-top:.7rem;">© 2026 BikeX. Minden jog fenntartva.</div></footer>
+</body>
+</html>

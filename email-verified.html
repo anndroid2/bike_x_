@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BikeX – Email megerősítve</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: white; min-height: 100vh; display: flex; flex-direction: column; }
+    a { text-decoration: none; color: inherit; }
+    .bg-pattern { position: fixed; inset: 0; background: radial-gradient(ellipse at 20% 50%, rgba(34,197,94,.12) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(59,130,246,.1) 0%, transparent 50%); pointer-events: none; }
+    .nav { background: rgba(17,24,39,.8); backdrop-filter: blur(10px); border-bottom: 1px solid #1f2937; padding: 0 2rem; display: flex; align-items: center; height: 60px; }
+    .logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+    .card { background: #1f2937; border: 1px solid #374151; border-radius: 1rem; padding: 2.5rem; width: 100%; max-width: 460px; text-align: center; }
+    .success-icon { width: 76px; height: 76px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; border-radius: 50%; background: rgba(34,197,94,.14); border: 1px solid rgba(74,222,128,.35); color: #4ade80; font-size: 2.4rem; }
+    .card-title { font-size: 1.6rem; font-weight: 800; margin-bottom: .65rem; }
+    .card-sub { color: #9ca3af; font-size: .92rem; line-height: 1.6; margin-bottom: 1.75rem; }
+    .btn-primary { display: block; width: 100%; background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; border: none; padding: .85rem; border-radius: .6rem; font-weight: 700; font-size: 1rem; cursor: pointer; transition: opacity .2s; }
+    .btn-primary:hover { opacity: .9; }
+    .secondary-link { display: inline-block; color: #9ca3af; font-size: .86rem; margin-top: 1.25rem; }
+    .secondary-link:hover { color: white; }
+    @media (max-width: 640px) { .nav { padding: 0 1rem; } .main { padding: 1rem; } .card { padding: 2rem 1.5rem; } }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+</head>
+<body>
+<div class="bg-pattern"></div>
+
+<nav class="nav">
+  <a href="index.html" class="logo">BikeX</a>
+</nav>
+
+<main class="main">
+  <section class="card" aria-labelledby="pageTitle">
+    <div class="success-icon" aria-hidden="true">✓</div>
+    <h1 class="card-title" id="pageTitle">Email címed megerősítve</h1>
+    <p class="card-sub">Sikeresen aktiváltad a BikeX fiókodat. Most már bejelentkezhetsz, és használhatod az összes funkciót.</p>
+    <a class="btn-primary" href="login.html">Bejelentkezés</a>
+    <a class="secondary-link" href="index.html">Vissza a főoldalra</a>
+  </section>
+</main>
+
+<script>
+  (async function () {
+    var email = '';
+    try {
+      var sessionResult = await sb.auth.getSession();
+      var session = sessionResult.data.session;
+      if (session && session.user && session.user.email) {
+        email = session.user.email;
+      }
+    } catch (e) {
+      console.error('Email verification session read failed:', e);
+    }
+
+    localStorage.setItem('bikexEmailVerifiedSignal', JSON.stringify({
+      at: Date.now(),
+      email: email
+    }));
+
+    var loginUrl = 'login.html?verified=1';
+    if (email) {
+      loginUrl += '&email=' + encodeURIComponent(email);
+    }
+
+    setTimeout(function () {
+      window.location.replace(loginUrl);
+    }, 1500);
+  }());
+</script>
+</body>
+</html>

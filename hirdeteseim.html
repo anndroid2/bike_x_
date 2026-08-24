@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BikeX - Hirdetéseim</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; background: #0a0e1a; color: #f8fafc; font-family: 'Inter', sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    .nav { min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0 2rem; background: #111827; border-bottom: 1px solid #1f2937; }
+    .logo { background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.4rem; font-weight: 800; }
+    .back { color: #94a3b8; font-size: .88rem; }
+    .back:hover { color: white; }
+    .page { width: min(1050px, calc(100% - 2rem)); margin: 0 auto; padding: 3rem 0 5rem; }
+    .eyebrow { color: #60a5fa; font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: .5rem 0 .5rem; font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; }
+    .lead { color: #94a3b8; line-height: 1.6; }
+    .top-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
+    .new-link { padding: .65rem .9rem; border-radius: .55rem; background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; font-size: .82rem; font-weight: 700; white-space: nowrap; }
+    .listing-list { display: grid; gap: 1rem; margin-top: 2rem; }
+    .listing-card { display: grid; grid-template-columns: 180px 1fr; gap: 1.25rem; padding: 1rem; border: 1px solid #334155; border-radius: 1rem; background: #111827; }
+    .listing-image { width: 180px; height: 150px; border-radius: .65rem; object-fit: cover; background: #0f172a; }
+    .listing-head { display: flex; justify-content: space-between; gap: 1rem; margin-bottom: .8rem; }
+    .listing-title { font-size: 1.05rem; font-weight: 800; }
+    .listing-price { color: #60a5fa; font-weight: 800; white-space: nowrap; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .65rem; }
+    .field { display: flex; flex-direction: column; gap: .3rem; }
+    .field.full { grid-column: 1 / -1; }
+    label { color: #94a3b8; font-size: .72rem; }
+    input, select, textarea { width: 100%; border: 1px solid #334155; border-radius: .45rem; padding: .55rem .65rem; background: #0f172a; color: white; outline: none; font: inherit; font-size: .82rem; }
+    textarea { min-height: 72px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: #60a5fa; }
+    .actions { display: flex; gap: .55rem; margin-top: .8rem; }
+    .button { border: 1px solid #475569; border-radius: .45rem; padding: .55rem .75rem; background: transparent; color: #cbd5e1; cursor: pointer; font: inherit; font-size: .78rem; font-weight: 700; }
+    .button.save { border: 0; background: #2563eb; color: white; }
+    .button.delete { border-color: rgba(248,113,113,.35); color: #fca5a5; }
+    .empty { margin-top: 2rem; padding: 2rem; border: 1px dashed #475569; border-radius: .8rem; color: #94a3b8; text-align: center; }
+    @media (max-width: 700px) { .nav { padding: .8rem 1rem; } .nav { align-items: flex-start; flex-direction: column; } .top-row { align-items: flex-start; flex-direction: column; } .listing-card { grid-template-columns: 1fr; } .listing-image { width: 100%; height: 190px; } .form-grid { grid-template-columns: 1fr; } .field.full { grid-column: auto; } }
+  </style>
+</head>
+<body>
+  <nav class="nav"><a href="index.html" class="logo">🚲 BikeX</a><div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;"><a href="index.html" class="back">Főoldal</a><a href="marketplace.html" class="back">Piactér</a><a href="analytics.html" class="back">Analytics</a><a href="shows.html" class="back">Versenyek</a><a href="parks.html" class="back">Parkok</a><a href="travel.html" class="back">Utazás</a><a href="profile.html" class="back">Profil</a></div></nav>
+  <main class="page">
+    <div class="top-row"><div><div class="eyebrow">Saját fiók · <span id="accountTypeLabel"></span></div><h1>Hirdetéseim</h1><p class="lead">Itt kezelheted a fiókodhoz tartozó összes hirdetést.</p></div><a href="hirdetes-feladasa.html" class="new-link">+ Új hirdetés</a></div>
+    <div id="listingList" class="listing-list"></div>
+  </main>
+  <script>
+    var session = JSON.parse(localStorage.getItem('bikexSession') || 'null');
+    if (!session || !session.email) window.location.href = 'login.html?return=hirdeteseim.html';
+    if (session && session.email) document.getElementById('accountTypeLabel').textContent = session.type === 'elado' ? (session.company || 'Eladó / üzlet') : 'Magánszemély';
+    var listContainer = document.getElementById('listingList');
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>'"]/g, function(character) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[character];
+      });
+    }
+    function getOwnListings() {
+      var listings = JSON.parse(localStorage.getItem('bikexListings') || '[]');
+      var removedListingNames = ['janika', 'elado motor', 'elado motort'];
+      var cleanedListings = listings.filter(function(item) {
+        var listingName = String(item.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+        return removedListingNames.indexOf(listingName) === -1;
+      });
+      if (cleanedListings.length !== listings.length) localStorage.setItem('bikexListings', JSON.stringify(cleanedListings));
+      return cleanedListings.filter(function(item) { return item.ownerEmail === session.email; });
+    }
+    function renderListings() {
+      var listings = getOwnListings();
+      if (!listings.length) {
+        listContainer.innerHTML = '<div class="empty">Még nincs saját hirdetésed. <a href="hirdetes-feladasa.html" style="color:#60a5fa;">Adj fel egyet most.</a></div>';
+        return;
+      }
+      listContainer.innerHTML = listings.map(function(item) {
+        return '<article class="listing-card"><img class="listing-image" src="' + escapeHtml(item.img) + '" alt="' + escapeHtml(item.name) + '">' +
+          '<form onsubmit="saveListing(' + item.id + ', event)"><div class="listing-head"><div class="listing-title">' + escapeHtml(item.name) + '</div><div class="listing-price">' + Number(item.price).toLocaleString('hu-HU') + ' Ft</div></div>' +
+          '<div class="form-grid"><div class="field full"><label>Termék neve</label><input name="name" value="' + escapeHtml(item.name) + '" required></div>' +
+          '<div class="field"><label>Ár (Ft)</label><input name="price" type="number" min="1" value="' + escapeHtml(item.price) + '" required></div>' +
+          '<div class="field"><label>Kategória</label><select name="cat"><option value="mtb" ' + (item.cat === 'mtb' ? 'selected' : '') + '>MTB</option><option value="road" ' + (item.cat === 'road' ? 'selected' : '') + '>Országúti</option><option value="bmx" ' + (item.cat === 'bmx' ? 'selected' : '') + '>BMX</option><option value="alkatresz" ' + (item.cat === 'alkatresz' ? 'selected' : '') + '>Alkatrész</option><option value="felszereles" ' + (item.cat === 'felszereles' ? 'selected' : '') + '>Felszerelés</option></select></div>' +
+          '<div class="field"><label>Állapot</label><select name="cond"><option ' + (item.cond === 'Kiváló' ? 'selected' : '') + '>Kiváló</option><option ' + (item.cond === 'Újszerű' ? 'selected' : '') + '>Újszerű</option><option ' + (item.cond === 'Jó' ? 'selected' : '') + '>Jó</option><option ' + (item.cond === 'Használt' ? 'selected' : '') + '>Használt</option></select></div>' +
+          '<div class="field full"><label>Kép URL-je</label><input name="img" type="url" value="' + (String(item.img).startsWith('data:') ? '' : escapeHtml(item.img)) + '" placeholder="Csatolt kép megtartásához hagyd üresen"></div>' +
+          '<div class="field full"><label>Leírás</label><textarea name="desc" required>' + escapeHtml(item.desc) + '</textarea></div></div>' +
+          '<div class="actions"><button class="button save" type="submit">Mentés</button><button class="button delete" type="button" onclick="deleteListing(' + item.id + ')">Törlés</button></div></form></article>';
+      }).join('');
+    }
+    function saveListing(id, event) {
+      event.preventDefault();
+      var form = event.target;
+      var listings = JSON.parse(localStorage.getItem('bikexListings') || '[]');
+      var item = listings.find(function(listing) { return listing.id === id && listing.ownerEmail === session.email; });
+      if (!item) return;
+      item.name = form.name.value.trim();
+      item.price = Number(form.price.value);
+      item.cat = form.cat.value;
+      item.cond = form.cond.value;
+      item.desc = form.desc.value.trim();
+      if (form.img.value.trim()) item.img = form.img.value.trim();
+      localStorage.setItem('bikexListings', JSON.stringify(listings));
+      renderListings();
+    }
+    function deleteListing(id) {
+      if (!confirm('Biztosan törölni szeretnéd ezt a hirdetést?')) return;
+      var listings = JSON.parse(localStorage.getItem('bikexListings') || '[]');
+      listings = listings.filter(function(item) { return !(item.id === id && item.ownerEmail === session.email); });
+      localStorage.setItem('bikexListings', JSON.stringify(listings));
+      renderListings();
+    }
+    renderListings();
+  </script>
+</body>
+</html>

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BikeX – Profilom</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .site-search { width: min(240px, 100%) !important; height: 38px; padding: 0 .8rem 0 2.2rem !important; border: 1px solid #374151 !important; border-radius: .5rem !important; background: #1f2937 !important; color: white !important; outline: none; font: inherit; font-size: .85rem; }
+    .site-search:focus { border-color: #60a5fa !important; box-shadow: 0 0 0 3px rgba(96,165,250,.12); }
+    .site-search::placeholder { color: #6b7280; }
+    body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: white; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+
+    /* NAV */
+    .nav { background: #111827; border-bottom: 1px solid #1f2937; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg,#3b82f6,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-link { color: #d1d5db; font-size: .95rem; transition: color .2s; }
+    .nav-link:hover, .nav-link.active { color: white; }
+    .btn-logout { background: #ef4444; color: white; border: none; padding: .45rem 1rem; border-radius: .5rem; font-size: .85rem; font-weight: 600; cursor: pointer; display: inline-block; }
+    .btn-logout:hover { background: #dc2626; }
+
+    /* CARDS */
+    .card { background: #1f2937; border: 1px solid #374151; border-radius: .75rem; }
+    .card:hover { border-color: #3b82f6; }
+    .stat-num { font-size: 1.6rem; font-weight: 800; color: #60a5fa; }
+    .stat-label { font-size: .8rem; color: #9ca3af; margin-top: .25rem; }
+
+    /* AVATAR */
+    .avatar-wrap { position: relative; width: 110px; height: 110px; }
+    .avatar-wrap img { width: 110px; height: 110px; border-radius: 50%; border: 3px solid #3b82f6; object-fit: cover; }
+    .avatar-edit { position: absolute; bottom: 4px; right: 4px; background: #3b82f6; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: .8rem; }
+
+    /* TABS */
+    .tab-bar { display: flex; gap: .5rem; border-bottom: 1px solid #374151; margin-bottom: 1.5rem; }
+    .tab { padding: .65rem 1.2rem; font-size: .9rem; font-weight: 500; color: #9ca3af; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .2s; }
+    .tab.active { color: #60a5fa; border-bottom-color: #3b82f6; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* PRODUCT CARD */
+    .prod-card { background: #111827; border: 1px solid #374151; border-radius: .75rem; overflow: hidden; transition: border-color .2s; }
+    .prod-card:hover { border-color: #3b82f6; }
+    .prod-img { width: 100%; height: 150px; object-fit: cover; }
+    .badge { display: inline-block; padding: .15rem .55rem; border-radius: 9999px; font-size: .72rem; font-weight: 600; }
+    .badge-green { background: rgba(34,197,94,.2); color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+    .badge-blue { background: rgba(59,130,246,.2); color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+    .badge-yellow { background: rgba(234,179,8,.2); color: #facc15; border: 1px solid rgba(234,179,8,.3); }
+
+    /* RESULT ROW */
+    .result-row { display: flex; align-items: center; gap: 1rem; background: #111827; border: 1px solid #374151; border-radius: .75rem; padding: 1rem 1.25rem; margin-bottom: .75rem; }
+    .medal { font-size: 1.5rem; min-width: 2rem; text-align: center; }
+
+    /* MODAL */
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 200; align-items: center; justify-content: center; }
+    .modal-bg.open { display: flex; }
+    .modal { background: #1f2937; border: 1px solid #374151; border-radius: 1rem; padding: 2rem; width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+
+    /* FORM */
+    .form-group { margin-bottom: 1.1rem; }
+    .form-label { display: block; font-size: .85rem; color: #9ca3af; margin-bottom: .4rem; }
+    .form-input { width: 100%; background: #111827; border: 1px solid #374151; border-radius: .5rem; padding: .65rem .9rem; color: white; font-size: .95rem; outline: none; }
+    .form-input:focus { border-color: #3b82f6; }
+    .btn-primary { background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; border: none; padding: .7rem 1.6rem; border-radius: .6rem; font-weight: 600; cursor: pointer; font-size: .95rem; }
+    .btn-primary:hover { opacity: .9; }
+    .btn-gray { background: #374151; color: #d1d5db; border: none; padding: .7rem 1.6rem; border-radius: .6rem; font-weight: 600; cursor: pointer; font-size: .95rem; }
+    .btn-gray:hover { background: #4b5563; }
+    .btn-red { background: #ef4444; color: white; border: none; padding: .7rem 1.6rem; border-radius: .6rem; font-weight: 600; cursor: pointer; font-size: .95rem; }
+    .btn-red:hover { background: #dc2626; }
+
+    /* SETTINGS */
+    .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid #374151; }
+    .setting-row:last-child { border-bottom: none; }
+    .toggle { position: relative; width: 44px; height: 24px; }
+    .toggle input { display: none; }
+    .slider { position: absolute; inset: 0; background: #374151; border-radius: 12px; cursor: pointer; transition: background .2s; }
+    .slider:before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: transform .2s; }
+    .toggle input:checked + .slider { background: #3b82f6; }
+    .toggle input:checked + .slider:before { transform: translateX(20px); }
+
+    @media (max-width: 640px) {
+      .nav-links { gap: .75rem; }
+      .nav-link { font-size: .8rem; }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="logo">🚲 BikeX</a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Főoldal</a>
+    <form action="marketplace.html" method="get" style="display:flex;align-items:center;position:relative;margin-right:.5rem;">
+      <span style="position:absolute;left:.8rem;color:#6b7280;">🔍</span>
+      <input name="q" type="search" class="search-input site-search" placeholder="Keresés..." />
+    </form>
+    <a href="marketplace.html" class="nav-link">Piactér</a>
+    <a href="analytics.html" class="nav-link">Analytics</a>
+    <a href="shows.html" class="nav-link">Versenyek</a>
+    <a href="parks.html" class="nav-link">Parkok</a>
+    <a href="travel.html" class="nav-link">Utazás</a>
+    <a href="login.html"
+       class="btn-logout"
+       onclick="if(confirm('Biztosan ki szeretnél jelentkezni?')) { localStorage.removeItem('bikexSession'); return true; } return false;">
+      Kijelentkezés
+    </a>
+  </div>
+</nav>
+
+<!-- HERO PROFIL -->
+<div style="background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.15));border-bottom:1px solid #1f2937;padding:2.5rem 2rem;">
+  <div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;">
+
+    <!-- Avatar -->
+    <div class="avatar-wrap" onclick="document.getElementById('avatarInput').click()">
+      <img id="avatarImg" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop" alt="Avatar" />
+      <div class="avatar-edit">✏️</div>
+    </div>
+    <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="changeAvatar(this)" />
+
+    <!-- Infó -->
+    <div style="flex:1;min-width:200px;">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.3rem;">
+        <h1 id="profileDisplayName" style="font-size:1.6rem;font-weight:800;">Kovács Péter</h1>
+        <span id="profileTypeBadge" class="badge badge-blue">Pro tag</span>
+      </div>
+      <div id="profileAccountLabel" style="color:#60a5fa;font-size:.82rem;margin-bottom:.5rem;"></div>
+      <div style="color:#9ca3af;font-size:.9rem;margin-bottom:.5rem;">📍 Budapest, Magyarország &nbsp;·&nbsp; 🚲 MTB & Enduro</div>
+      <div style="color:#d1d5db;font-size:.9rem;">Szenvedélyes hegyi kerékpáros. Versenyző és kerékpár entuziastát. 7 éve nyergel.</div>
+      <div style="margin-top:.75rem;">
+        <button onclick="openEditModal()" class="btn-primary" style="font-size:.85rem;padding:.5rem 1.2rem;">✏️ Profil szerkesztése</button>
+      </div>
+    </div>
+
+    <!-- Stat kártyák -->
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+      <div class="card" style="padding:1rem 1.5rem;text-align:center;">
+        <div class="stat-num">24</div>
+        <div class="stat-label">Hirdetés</div>
+      </div>
+      <div class="card" style="padding:1rem 1.5rem;text-align:center;">
+        <div class="stat-num">138</div>
+        <div class="stat-label">km idén</div>
+      </div>
+      <div class="card" style="padding:1rem 1.5rem;text-align:center;">
+        <div class="stat-num">12</div>
+        <div class="stat-label">Verseny</div>
+      </div>
+      <div class="card" style="padding:1rem 1.5rem;text-align:center;">
+        <div class="stat-num">4.9⭐</div>
+        <div class="stat-label">Értékelés</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main style="max-width:1100px;margin:2rem auto;padding:0 1.5rem;">
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('hirdetesek', this)">📋 Hirdetéseim</div>
+    <div class="tab" onclick="switchTab('eredmenyek', this)">🏆 Eredmények</div>
+    <div class="tab" onclick="switchTab('beallitasok', this)">⚙️ Beállítások</div>
+  </div>
+
+  <!-- TAB: Hirdetések -->
+  <div class="tab-panel active" id="tab-hirdetesek">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <h2 style="font-size:1.1rem;font-weight:700;">Aktív hirdetéseim</h2>
+      <button class="btn-primary" style="font-size:.85rem;padding:.5rem 1.1rem;" onclick="alert('Új hirdetés oldal – hamarosan!')">+ Új hirdetés</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;">
+
+      <div class="prod-card" onclick="alert('Hirdetés részletei')">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop" alt="Kerékpár" />
+        <div style="padding:.9rem;">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:.4rem;">
+            <div style="font-weight:600;font-size:.95rem;">Trek Marlin 7</div>
+            <span class="badge badge-green">Aktív</span>
+          </div>
+          <div style="color:#60a5fa;font-weight:700;margin-bottom:.4rem;">185 000 Ft</div>
+          <div style="color:#9ca3af;font-size:.8rem;">MTB · 2022 · Kiváló</div>
+          <div style="color:#6b7280;font-size:.75rem;margin-top:.4rem;">Megtekintés: 47</div>
+        </div>
+      </div>
+
+      <div class="prod-card" onclick="alert('Hirdetés részletei')">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=400&h=200&fit=crop" alt="Kerékpár" />
+        <div style="padding:.9rem;">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:.4rem;">
+            <div style="font-weight:600;font-size:.95rem;">Shimano XT pedál</div>
+            <span class="badge badge-yellow">Függőben</span>
+          </div>
+          <div style="color:#60a5fa;font-weight:700;margin-bottom:.4rem;">18 500 Ft</div>
+          <div style="color:#9ca3af;font-size:.8rem;">Alkatrész · Használt</div>
+          <div style="color:#6b7280;font-size:.75rem;margin-top:.4rem;">Megtekintés: 12</div>
+        </div>
+      </div>
+
+      <div class="prod-card" onclick="alert('Hirdetés részletei')">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=400&h=200&fit=crop" alt="Kerékpár" />
+        <div style="padding:.9rem;">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:.4rem;">
+            <div style="font-weight:600;font-size:.95rem;">Fox Shox 34 villa</div>
+            <span class="badge badge-green">Aktív</span>
+          </div>
+          <div style="color:#60a5fa;font-weight:700;margin-bottom:.4rem;">95 000 Ft</div>
+          <div style="color:#9ca3af;font-size:.8rem;">Alkatrész · 2021</div>
+          <div style="color:#6b7280;font-size:.75rem;margin-top:.4rem;">Megtekintés: 83</div>
+        </div>
+      </div>
+
+      <div class="prod-card" onclick="alert('Hirdetés részletei')">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&h=200&fit=crop" alt="Kerékpár" />
+        <div style="padding:.9rem;">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:.4rem;">
+            <div style="font-weight:600;font-size:.95rem;">Cannondale Scalpel</div>
+            <span class="badge badge-green">Aktív</span>
+          </div>
+          <div style="color:#60a5fa;font-weight:700;margin-bottom:.4rem;">420 000 Ft</div>
+          <div style="color:#9ca3af;font-size:.8rem;">Full-sus MTB · 2023</div>
+          <div style="color:#6b7280;font-size:.75rem;margin-top:.4rem;">Megtekintés: 156</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TAB: Eredmények -->
+  <div class="tab-panel" id="tab-eredmenyek">
+    <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1.25rem;">🏆 Versenyeredményeim</h2>
+
+    <div class="result-row">
+      <div class="medal">🥇</div>
+      <div style="flex:1;">
+        <div style="font-weight:600;">Budapest MTB Maraton 2025</div>
+        <div style="color:#9ca3af;font-size:.85rem;">2025. május 18. · Profi kategória</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="color:#facc15;font-weight:700;">1. hely</div>
+        <div style="color:#9ca3af;font-size:.8rem;">3:42:15</div>
+      </div>
+    </div>
+
+    <div class="result-row">
+      <div class="medal">🥈</div>
+      <div style="flex:1;">
+        <div style="font-weight:600;">Bükk Enduro Cup 2025</div>
+        <div style="color:#9ca3af;font-size:.85rem;">2025. március 22. · Expert</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="color:#d1d5db;font-weight:700;">2. hely</div>
+        <div style="color:#9ca3af;font-size:.8rem;">5 stage · összesített</div>
+      </div>
+    </div>
+
+    <div class="result-row">
+      <div class="medal">🥇</div>
+      <div style="flex:1;">
+        <div style="font-weight:600;">Visegrád 7 Races 2024</div>
+        <div style="color:#9ca3af;font-size:.85rem;">2024. október 5. · Masters 30+</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="color:#facc15;font-weight:700;">1. hely</div>
+        <div style="color:#9ca3af;font-size:.8rem;">2:58:44</div>
+      </div>
+    </div>
+
+    <div class="result-row">
+      <div class="medal">🥉</div>
+      <div style="flex:1;">
+        <div style="font-weight:600;">Pécs Trail Run MTB 2024</div>
+        <div style="color:#9ca3af;font-size:.85rem;">2024. szeptember 14. · Profi</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="color:#cd7f32;font-weight:700;">3. hely</div>
+        <div style="color:#9ca3af;font-size:.8rem;">1:24:07</div>
+      </div>
+    </div>
+
+    <div class="result-row">
+      <div class="medal">4️⃣</div>
+      <div style="flex:1;">
+        <div style="font-weight:600;">Mátrai Bikefest 2024</div>
+        <div style="color:#9ca3af;font-size:.85rem;">2024. augusztus 3. · Profi</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="color:#d1d5db;font-weight:700;">4. hely</div>
+        <div style="color:#9ca3af;font-size:.8rem;">4:11:30</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TAB: Beállítások -->
+  <div class="tab-panel" id="tab-beallitasok">
+    <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1.25rem;">⚙️ Fiók beállítások</h2>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="setting-row">
+        <div>
+          <div style="font-weight:600;font-size:.95rem;">Email értesítések</div>
+          <div style="color:#9ca3af;font-size:.82rem;">Új üzenetek és ajánlatok</div>
+        </div>
+        <label class="toggle"><input type="checkbox" checked /><span class="slider"></span></label>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div style="font-weight:600;font-size:.95rem;">Push értesítések</div>
+          <div style="color:#9ca3af;font-size:.82rem;">Böngésző push üzenetek</div>
+        </div>
+        <label class="toggle"><input type="checkbox" /><span class="slider"></span></label>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div style="font-weight:600;font-size:.95rem;">Nyilvános profil</div>
+          <div style="color:#9ca3af;font-size:.82rem;">Mindenki láthatja a profilodat</div>
+        </div>
+        <label class="toggle"><input type="checkbox" checked /><span class="slider"></span></label>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div style="font-weight:600;font-size:.95rem;">Kétlépcsős hitelesítés</div>
+          <div style="color:#9ca3af;font-size:.82rem;">2FA SMS vagy email kóddal</div>
+        </div>
+        <label class="toggle"><input type="checkbox" /><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <div class="card" style="padding:1.5rem;margin-bottom:1.5rem;">
+      <h3 style="font-weight:700;margin-bottom:1rem;">Jelszó módosítása</h3>
+      <div class="form-group">
+        <label class="form-label">Jelenlegi jelszó</label>
+        <input type="password" class="form-input" placeholder="••••••••" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Új jelszó</label>
+        <input type="password" class="form-input" placeholder="••••••••" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Új jelszó megerősítése</label>
+        <input type="password" class="form-input" placeholder="••••••••" />
+      </div>
+      <button class="btn-primary" onclick="alert('Jelszó módosítva!')">Mentés</button>
+    </div>
+
+    <div class="card" style="padding:1.5rem;border-color:#7f1d1d;">
+      <h3 style="font-weight:700;margin-bottom:.5rem;color:#f87171;">⚠️ Veszélyes zóna</h3>
+      <p style="color:#9ca3af;font-size:.9rem;margin-bottom:1rem;">A fiók törlése visszavonhatatlan. Az összes hirdetésed és adatod törlődik.</p>
+      <button class="btn-red" onclick="alert('Fiók törlése funkció hamarosan elérhető.')">Fiók törlése</button>
+    </div>
+
+    <!-- KIJELENTKEZÉS SZEKCIÓ -->
+    <div style="margin-top:1.5rem;padding:1.25rem;background:#1f2937;border:1px solid #374151;border-radius:.75rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <div style="font-weight:600;">Kijelentkezés</div>
+        <div style="color:#9ca3af;font-size:.85rem;">Visszatér a bejelentkező oldalra</div>
+      </div>
+      <a href="login.html"
+         class="btn-logout"
+         style="padding:.65rem 1.4rem;"
+        onclick="doLogout(); return false;">
+        Kijelentkezés
+      </a>
+    </div>
+
+  </div>
+</main>
+
+<!-- PROFIL SZERKESZTŐ MODAL -->
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+      <h2 style="font-size:1.2rem;font-weight:700;">Profil szerkesztése</h2>
+      <button onclick="closeEditModal()" style="background:none;border:none;color:#9ca3af;font-size:1.4rem;cursor:pointer;">✕</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Teljes név</label>
+      <input id="profileNameInput" type="text" class="form-input" value="Kovács Péter" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email cím</label>
+      <input id="profileEmailInput" type="email" class="form-input" value="kovacs.peter@email.hu" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Telefonszám</label>
+      <input type="tel" class="form-input" value="+36 30 123 4567" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Helyszín</label>
+      <input type="text" class="form-input" value="Budapest, Magyarország" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Bemutatkozás</label>
+      <textarea class="form-input" rows="3" style="resize:vertical;">Szenvedélyes hegyi kerékpáros. Versenyző és kerékpár entuziastát. 7 éve nyergel.</textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Kedvenc kerékpárstílus</label>
+      <select class="form-input" style="cursor:pointer;">
+        <option>MTB & Enduro</option>
+        <option>Road / Országúti</option>
+        <option>BMX</option>
+        <option>Gravel</option>
+        <option>Downhill</option>
+      </select>
+    </div>
+
+    <div style="display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem;">
+      <button class="btn-gray" onclick="closeEditModal()">Mégse</button>
+      <button class="btn-primary" onclick="saveProfile()">💾 Mentés</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  var profileSession = null;
+
+  async function loadProfile() {
+    var authSession = await getSession();
+    if (!authSession) {
+      window.location.href = 'login.html?return=profile.html';
+      return;
+    }
+    profileSession = toBikeXSession(authSession.user);
+    localStorage.setItem('bikexSession', JSON.stringify(profileSession));
+    var profileDisplayName = profileSession.displayName || profileSession.name || profileSession.email.split('@')[0];
+    document.getElementById('profileDisplayName').textContent = profileDisplayName;
+    document.getElementById('profileNameInput').value = profileSession.name || profileSession.email.split('@')[0];
+    document.getElementById('profileEmailInput').value = profileSession.email;
+    document.getElementById('profileTypeBadge').textContent = profileSession.type === 'elado' ? 'Eladó fiók' : 'Magánszemély';
+    document.getElementById('profileAccountLabel').textContent = profileSession.type === 'elado' ? '🏪 ' + (profileSession.company || profileDisplayName) : '👤 Magánszemélyes profil';
+  }
+  loadProfile();
+
+  async function doLogout() {
+    if (!confirm('Biztosan ki szeretnél jelentkezni?')) return false;
+    await sb.auth.signOut();
+    localStorage.removeItem('bikexSession');
+    window.location.href = 'login.html';
+  }
+
+  /* TAB VÁLTÁS */
+  function switchTab(name, el) {
+    var panels = document.querySelectorAll('.tab-panel');
+    var tabs = document.querySelectorAll('.tab');
+    for (var i = 0; i < panels.length; i++) panels[i].classList.remove('active');
+    for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+    document.getElementById('tab-' + name).classList.add('active');
+    el.classList.add('active');
+  }
+
+  /* MODAL */
+  function openEditModal() {
+    document.getElementById('editModal').classList.add('open');
+  }
+  function closeEditModal() {
+    document.getElementById('editModal').classList.remove('open');
+  }
+  document.getElementById('editModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEditModal();
+  });
+
+  /* PROFIL MENTÉS */
+  async function saveProfile() {
+    var name = document.getElementById('profileNameInput').value.trim();
+    var email = document.getElementById('profileEmailInput').value.trim();
+    if (!name || !email) {
+      alert('A név és az e-mail-cím kötelező.');
+      return;
+    }
+    var oldEmail = profileSession.email;
+    var nextDisplayName = profileSession.type === 'elado' ? (profileSession.company || name) : name;
+    var listings = JSON.parse(localStorage.getItem('bikexListings') || '[]');
+    listings.forEach(function(listing) {
+      if (listing.ownerEmail === oldEmail) {
+        listing.ownerEmail = email;
+        listing.ownerName = nextDisplayName;
+      }
+    });
+    localStorage.setItem('bikexListings', JSON.stringify(listings));
+    var updateResult = await sb.auth.updateUser({
+      email: email,
+      data: { name: name, company: profileSession.company, type: profileSession.type }
+    });
+    if (updateResult.error) {
+      alert(updateResult.error.message);
+      return;
+    }
+    profileSession.name = name;
+    profileSession.email = email;
+    profileSession.displayName = nextDisplayName;
+    localStorage.setItem('bikexSession', JSON.stringify(profileSession));
+    document.getElementById('profileDisplayName').textContent = profileSession.displayName;
+    alert('Profil sikeresen mentve!');
+    closeEditModal();
+  }
+
+  /* AVATAR CSERE */
+  function changeAvatar(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('avatarImg').src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  /* BILLENTYŰ: ESC zárja a modalt */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeEditModal();
+  });
+</script>
+
+</body>
+</html>
