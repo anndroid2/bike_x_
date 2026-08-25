@@ -81,6 +81,19 @@
     var cartTotal = document.getElementById('cartTotal');
     var authPanel = document.getElementById('authPanel');
 
+    function escapeHtml(value) {
+      return String(value == null ? '' : value).replace(/[&<>'"]/g, function(character) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[character];
+      });
+    }
+
+    function safeImageUrl(value) {
+      var imageUrl = String(value || '');
+      return imageUrl.indexOf('data:image/') === 0 || imageUrl.indexOf('https://') === 0 || imageUrl.indexOf('http://') === 0
+        ? imageUrl
+        : 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop';
+    }
+
     if (session && session.email) {
       authPanel.innerHTML = '<h2>Rendelés véglegesítése</h2>' +
         '<div class="logged-in">✓ Bejelentkezve: ' + (session.name || session.email) + '</div>' +
@@ -100,7 +113,7 @@
       cartTotal.style.display = 'none';
     } else {
       cartList.innerHTML = cart.map(function(item) {
-        return '<div class="cart-item"><img src="' + item.img + '" alt="' + item.name + '"><div><strong>' + item.name + '</strong><span>' + item.price.toLocaleString('hu-HU') + ' Ft</span></div></div>';
+        return '<div class="cart-item"><img src="' + escapeHtml(safeImageUrl(item.img)) + '" alt="' + escapeHtml(item.name) + '"><div><strong>' + escapeHtml(item.name) + '</strong><span>' + Number(item.price).toLocaleString('hu-HU') + ' Ft</span></div></div>';
       }).join('');
       var total = cart.reduce(function(sum, item) { return sum + item.price; }, 0);
       cartTotal.innerHTML = '<span>Összesen</span><span>' + total.toLocaleString('hu-HU') + ' Ft</span>';

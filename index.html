@@ -6,6 +6,7 @@
   <title>BikeX – Kerékpár piactér, versenyek és bike parkok</title>
   <meta name="description" content="Kerékpárok, alkatrészek és felszerelések piactere. Fedezd fel a magyarországi versenyeket, bike parkokat és kerékpáros utazásokat a BikeX-en." />
   <link rel="canonical" href="https://www.bikex.hu/" />
+  <meta name="google-site-verification" content="8P8o42uW-vp9EtYyp30NWI5yTVzW8_w5vEup12FXs9U" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="BikeX" />
   <meta property="og:locale" content="hu_HU" />
@@ -77,7 +78,11 @@
     .badge-yellow { background: rgba(234,179,8,0.2); color: #facc15; border: 1px solid rgba(234,179,8,0.3); }
     .footer-link { color: #9ca3af; text-decoration: none; transition: color 0.2s; }
     .footer-link:hover { color: white; }
-    .mobile-menu { display: none; }
+    .mobile-menu { display: none; padding: .75rem 1rem 1rem; background: #111827; border-top: 1px solid #1f2937; }
+    .mobile-menu.open { display: grid; gap: .25rem; }
+    .mobile-menu a { padding: .65rem .4rem; color: #d1d5db; font-size: .9rem; }
+    .mobile-menu a:hover, .mobile-menu a:focus-visible { color: white; }
+    .mobile-menu-btn { border: 1px solid #374151; border-radius: .5rem; padding: .45rem .65rem; color: #d1d5db; background: transparent; cursor: pointer; font-size: 1.1rem; line-height: 1; }
     @media (max-width: 768px) {
       .nav-links { display: none; }
       .desktop-search { display: none; }
@@ -95,6 +100,7 @@
 <!-- ═══════════════════════════════════════════════════════ HEADER -->
 <nav class="nav">
   <a href="index.html" class="logo">🚲 BikeX</a>
+  <button class="mobile-menu-btn" type="button" aria-label="Navigáció megnyitása" aria-expanded="false" aria-controls="mobileMenu" onclick="toggleMobileMenu(this)">☰</button>
   <div class="nav-links">
     <form action="marketplace.html" method="get" style="display:flex;align-items:center;position:relative;margin-right:.5rem;">
       <span style="position:absolute;left:.8rem;color:#6b7280;">🔍</span>
@@ -110,6 +116,16 @@
     <a href="register.html" class="btn-primary">Regisztráció</a>
   </div>
 </nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="marketplace.html">Piactér</a>
+  <a href="analytics.html">Teljesítmény</a>
+  <a href="shows.html">Versenyek</a>
+  <a href="parks.html">Parkok</a>
+  <a href="travel.html">Utazás</a>
+  <a href="profile.html">Profil</a>
+  <a href="login.html">Bejelentkezés</a>
+  <a href="register.html">Regisztráció</a>
+</div>
 
 <!-- ═══════════════════════════════════════════════════════ HERO -->
 <section style="position: relative; min-height: 80vh; display: flex; align-items: center; justify-content: center; overflow: hidden;">
@@ -117,15 +133,15 @@
   <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(10,14,26,0.92) 0%, rgba(10,14,26,0.7) 60%, transparent 100%);"></div>
   <div style="position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; text-align: center;">
     <h1 style="font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem;">
-      <span style="background: linear-gradient(to right, white, #d1d5db); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Trade Bikes</span><br />
-      <span class="crypto-gradient-text">Like a Pro</span>
+      <span style="background: linear-gradient(to right, white, #d1d5db); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Kerékpárok</span><br />
+      <span class="crypto-gradient-text">egy helyen</span>
     </h1>
     <p style="font-size: 1.2rem; color: #d1d5db; margin-bottom: 2.5rem; max-width: 550px; margin-left: auto; margin-right: auto;">
-      The world's most advanced platform for buying, selling, and tracking bikes internationally. Experience premium features with crypto-grade security.
+      Fedezd fel, add el és vásárold meg a következő kerékpárodat egy bringásoknak készült közösségi piactéren.
     </p>
     <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-      <a href="marketplace.html" class="btn-primary" style="font-size: 1.1rem; padding: 0.9rem 2.5rem;">Start Trading</a>
-      <a href="parks.html" class="btn-outline" style="font-size: 1.1rem; padding: 0.9rem 2.5rem;">Explore Parks</a>
+      <a href="marketplace.html" class="btn-primary" style="font-size: 1.1rem; padding: 0.9rem 2.5rem;">Piactér megnyitása</a>
+      <a href="parks.html" class="btn-outline" style="font-size: 1.1rem; padding: 0.9rem 2.5rem;">Parkok felfedezése</a>
     </div>
   </div>
 </section>
@@ -135,19 +151,19 @@
   <div style="max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; text-align: center;">
     <div>
       <div style="font-size: 2.5rem; font-weight: 800; color: #3b82f6; margin-bottom: 0.5rem;">10K+</div>
-      <div style="color: #9ca3af;">Products Listed</div>
+      <div style="color: #9ca3af;">Aktív hirdetés</div>
     </div>
     <div>
       <div style="font-size: 2.5rem; font-weight: 800; color: #8b5cf6; margin-bottom: 0.5rem;">50+</div>
-      <div style="color: #9ca3af;">Countries</div>
+      <div style="color: #9ca3af;">Elérhető ország</div>
     </div>
     <div>
       <div style="font-size: 2.5rem; font-weight: 800; color: #4ade80; margin-bottom: 0.5rem;">500+</div>
-      <div style="color: #9ca3af;">Bike Parks</div>
+      <div style="color: #9ca3af;">Kerékpárpark</div>
     </div>
     <div>
       <div style="font-size: 2.5rem; font-weight: 800; color: #facc15; margin-bottom: 0.5rem;">25K+</div>
-      <div style="color: #9ca3af;">Active Users</div>
+      <div style="color: #9ca3af;">Regisztrált felhasználó</div>
     </div>
   </div>
 </section>
@@ -156,8 +172,8 @@
 <section id="marketplace" style="padding: 5rem 1.5rem; background: #0a0e1a;">
   <div style="max-width: 1280px; margin: 0 auto;">
     <div style="text-align: center; margin-bottom: 3.5rem;">
-      <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">Featured Products</h2>
-      <p style="color: #9ca3af; font-size: 1.1rem;">Premium bikes and parts from verified sellers worldwide</p>
+      <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">Kiemelt hirdetések</h2>
+      <p style="color: #9ca3af; font-size: 1.1rem;">Kerékpárok és alkatrészek a közösség eladóitól</p>
     </div>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
 
@@ -231,7 +247,7 @@
 
     </div>
     <div style="text-align: center; margin-top: 3rem;">
-      <a href="marketplace.html" class="btn-primary">View All Products</a>
+      <a href="marketplace.html" class="btn-primary">Összes hirdetés</a>
     </div>
   </div>
 </section>
@@ -240,8 +256,8 @@
 <section style="padding: 5rem 1.5rem; background: #111827;">
   <div style="max-width: 1280px; margin: 0 auto;">
     <div style="text-align: center; margin-bottom: 3.5rem;">
-      <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">Platform Features</h2>
-      <p style="color: #9ca3af; font-size: 1.1rem;">Everything you need for the perfect bike adventure</p>
+      <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">A BikeX funkciói</h2>
+      <p style="color: #9ca3af; font-size: 1.1rem;">Minden, amire a következő bringás kalandhoz szükséged lehet</p>
     </div>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
 
@@ -249,32 +265,32 @@
         <div class="crypto-gradient" style="width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
         </div>
-        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem;">Global Marketplace</h3>
-        <p style="color: #9ca3af; font-size: 0.9rem; line-height: 1.6;">Buy and sell bikes internationally with secure transactions</p>
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem;">Kerékpáros piactér</h3>
+        <p style="color: #9ca3af; font-size: 0.9rem; line-height: 1.6;">Böngéssz, adj fel hirdetést, és találd meg a hozzád illő kerékpárt.</p>
       </div>
 
       <div class="crypto-card feature-card" style="padding: 2rem; text-align: center;">
         <div class="crypto-gradient" style="width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         </div>
-        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem;">Performance Analytics</h3>
-        <p style="color: #9ca3af; font-size: 0.9rem; line-height: 1.6;">Track your rides with detailed performance metrics</p>
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem;">Teljesítmény és statisztikák</h3>
+        <p style="color: #9ca3af; font-size: 0.9rem; line-height: 1.6;">Kövesd nyomon a tekeréseidet és a fontosabb eredményeidet.</p>
       </div>
 
       <div class="crypto-card feature-card" style="padding: 2rem; text-align: center;">
         <div class="crypto-gradient" style="width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         </div>
-        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem;">Bike Shows &amp; Events</h3>
-        <p style="color: #9ca3af; font-size: 0.9rem; line-height: 1.6;">Discover upcoming shows and competitions worldwide</p>
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem;">Versenyek és események</h3>
+        <p style="color: #9ca3af; font-size: 0.9rem; line-height: 1.6;">Találd meg a közelgő versenyeket és bringás eseményeket.</p>
       </div>
 
       <div class="crypto-card feature-card" style="padding: 2rem; text-align: center;">
         <div class="crypto-gradient" style="width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         </div>
-        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem;">Bike Parks Directory</h3>
-        <p style="color: #9ca3af; font-size: 0.9rem; line-height: 1.6;">Find the best trails and parks with travel planning</p>
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem;">Kerékpárparkok</h3>
+        <p style="color: #9ca3af; font-size: 0.9rem; line-height: 1.6;">Fedezd fel a legjobb pályákat, és tervezd meg a következő utazásodat.</p>
       </div>
 
     </div>
@@ -302,7 +318,7 @@
         <div style="margin-bottom: 1rem;">
           <a href="index.html" class="logo" style="font-size: 1.2rem;">🚲 BikeX</a>
         </div>
-        <p style="color: #6b7280; font-size: 0.9rem; line-height: 1.7;">The world's most advanced platform for buying, selling, and tracking bikes internationally.</p>
+        <p style="color: #6b7280; font-size: 0.9rem; line-height: 1.7;">Közösségi piactér kerékpárokhoz, alkatrészekhez és bringás élményekhez.</p>
       </div>
 
       <div>
@@ -329,10 +345,19 @@
 
     <div style="border-top: 1px solid #1f2937; padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
       <p style="color: #6b7280; font-size: 0.85rem;">© 2026 BikeX. Minden jog fenntartva.</p>
-      <p style="color: #6b7280; font-size: 0.85rem;">Made with ❤️ for cyclists worldwide</p>
+      <p style="color: #6b7280; font-size: 0.85rem;">Bringásoknak készült, itthonról.</p>
     </div>
   </div>
 </footer>
+
+<script>
+  function toggleMobileMenu(button) {
+    var menu = document.getElementById('mobileMenu');
+    var isOpen = menu.classList.toggle('open');
+    button.setAttribute('aria-expanded', String(isOpen));
+    button.setAttribute('aria-label', isOpen ? 'Navigáció bezárása' : 'Navigáció megnyitása');
+  }
+</script>
 
 </body>
 </html>
