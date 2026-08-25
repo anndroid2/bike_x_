@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /checkout.html
+Disallow: /email-verified.html
+Disallow: /forgot-password.html
+Disallow: /hirdetes-feladasa.html
+Disallow: /hirdeteseim.html
+Disallow: /login.html
+Disallow: /profile.html
+Disallow: /register.html
+Disallow: /reset-password.html
+
+Sitemap: https://www.bikex.hu/sitemap.xml
